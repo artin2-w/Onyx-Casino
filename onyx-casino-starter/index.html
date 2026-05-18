@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Onyx Casino is a fake-money online casino simulator using virtual credits only." />
+  <title>Onyx Casino - Virtual Credits Casino Simulator</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div class="age-safe-banner" role="note">
+    <strong>Fake-money simulator.</strong> Virtual credits only. No real-money gambling.
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <button class="brand" data-view="lobby" aria-label="Open Onyx Casino lobby">
+        <span class="brand-mark">O</span>
+        <span>
+          <strong>Onyx Casino</strong>
+          <small>Play-money lobby</small>
+        </span>
+      </button>
+
+      <nav class="nav-list">
+        <button class="nav-btn is-active" data-view="lobby">Lobby</button>
+        <button class="nav-btn" data-view="rewards">Rewards</button>
+        <button class="nav-btn" data-view="vip">VIP</button>
+        <button class="nav-btn" data-view="history">History</button>
+        <button class="nav-btn" data-view="settings">Settings</button>
+        <button class="nav-btn" data-view="slots">Onyx Slots</button>
+        <button class="nav-btn" data-view="roulette">Roulette</button>
+        <button class="nav-btn" data-view="blackjack">Blackjack</button>
+        <button class="nav-btn" data-view="dice">Dice Duel</button>
+        <button class="nav-btn" data-view="mines">Mines</button>
+        <button class="nav-btn" data-view="crash">Crash</button>
+        <button class="nav-btn" data-view="plinko">Plinko</button>
+        <button class="nav-btn" data-view="profile">Profile</button>
+      </nav>
+
+      <section class="sidebar-card">
+        <span class="label">Daily Bonus</span>
+        <strong id="dailyBonusAmount">+0 credits</strong>
+        <button id="dailyBonusBtn" class="primary small">Claim Bonus</button>
+        <p id="dailyBonusText" class="muted">Available once per day.</p>
+      </section>
+
+      <section class="sidebar-card">
+        <span class="label">Missions</span>
+        <p id="miniMissionText" class="muted">Progress updates as you play.</p>
+      </section>
+
+      <section class="sidebar-card warning">
+        <span class="label">Reality Check</span>
+        <p>This is a casino-style simulator using fictional credits. Virtual credits only. No real-money gambling.</p>
+        <button class="ghost small" data-modal="fakeMoney">Fake Money Info</button>
+      </section>
+    </aside>
+
+    <main class="main">
+      <header class="topbar" aria-label="Player status">
+        <div class="status-card balance-card">
+          <span class="label">Credits</span>
+          <strong id="balanceText">0 credits</strong>
+          <small class="balance-help" title="Virtual credits only. No real-money gambling.">Simulator balance</small>
+        </div>
+        <div class="status-card">
+          <span class="label">Level</span>
+          <strong id="levelText">1</strong>
+          <div class="xp-track" aria-label="XP progress"><span id="xpBar"></span></div>
+          <small id="xpText">0 / 0 XP</small>
+        </div>
+        <div class="status-card">
+          <span class="label">VIP Tier</span>
+          <strong id="vipText">Bronze</strong>
+          <div class="xp-track vip-track"><span id="vipBar"></span></div>
+        </div>
+        <div class="status-card">
+          <span class="label">Daily Streak</span>
+          <strong id="streakText">0 days</strong>
+        </div>
+        <button id="howItWorksBtn" class="ghost">How It Works</button>
+      </header>
+
+      <section id="toastArea" class="toast-area" aria-live="polite"></section>
+
+      <section id="view-lobby" class="view is-visible">
+        <div class="hero-panel">
+          <div class="hero-copy-block">
+            <p class="eyebrow">Premium casino simulator</p>
+            <h1>Onyx Casino - Play with virtual credits</h1>
+            <p>Step into a realistic play-money casino lobby with slots, table games, missions, VIP progression, and a live activity feed.</p>
+            <div class="hero-disclaimer">Virtual credits only. No real-money gambling.</div>
+            <div class="hero-actions">
+              <button class="primary" data-open-game="slots">Play Featured Game</button>
+              <button class="secondary" data-modal="rules-lobby">View Lobby Guide</button>
+            </div>
+          </div>
+          <div class="hero-stage" aria-hidden="true">
+            <div class="hero-chip chip-one">VIP</div>
+            <div class="hero-chip chip-two">10K</div>
+            <div class="hero-card ace">A</div>
+            <div class="hero-card seven">7</div>
+          </div>
+        </div>
+
+        <section class="lobby-band">
+          <div class="recommended-row">
+            <button class="recommend-card" data-open-game="mines"><span>Fast Games</span><strong>Mines</strong></button>
+            <button class="recommend-card" data-open-game="roulette"><span>Table Games</span><strong>Roulette</strong></button>
+            <button class="recommend-card" data-open-game="crash"><span>High Risk</span><strong>Crash</strong></button>
+          </div>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Casino Floor</p>
+              <h2>Choose a Game</h2>
+            </div>
+            <div id="categoryTabs" class="tabs" role="tablist" aria-label="Game categories">
+              <button class="tab is-active" data-category="featured">Featured</button>
+              <button class="tab" data-category="slots">Slots</button>
+              <button class="tab" data-category="table">Table Games</button>
+              <button class="tab" data-category="quick">Quick Games</button>
+              <button class="tab" data-category="new">New</button>
+            </div>
+          </div>
+          <div id="gameGrid" class="game-grid"></div>
+        </section>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="section-head compact">
+              <div>
+                <p class="eyebrow">Rewards</p>
+                <h2>Missions</h2>
+              </div>
+              <span id="missionProgressText" class="pill">0/0</span>
+            </div>
+            <div id="missionsList" class="mission-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head compact">
+              <div>
+                <p class="eyebrow">Badges</p>
+                <h2>Achievements</h2>
+              </div>
+              <span class="pill">Permanent</span>
+            </div>
+            <div id="achievementsList" class="achievement-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head compact">
+              <div>
+                <p class="eyebrow">Live Feed</p>
+                <h2>Recent Wins</h2>
+              </div>
+              <span class="pill">Local save</span>
+            </div>
+            <div id="recentWinsFeed" class="wins-feed"></div>
+          </section>
+        </div>
+
+        <section class="panel transaction-panel">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow">Account</p>
+              <h2>Recent Transactions</h2>
+            </div>
+          </div>
+          <div id="activityLog" class="activity-log"></div>
+        </section>
+      </section>
+
+      <section id="view-rewards" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Retention</p><h1>Reward Center</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <div class="dashboard-grid rewards-layout">
+          <section class="panel reward-claim-panel">
+            <div class="section-head compact"><div><p class="eyebrow">Daily Login</p><h2>7-Day Calendar</h2></div><span id="dailyCooldownText" class="pill">Available now</span></div>
+            <div id="dailyCalendar" class="daily-calendar"></div>
+            <button id="rewardDailyBtn" class="primary full">Claim Daily Reward</button>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Promo</p><h2>Fake Codes</h2></div></div>
+            <label>Promo code
+              <input id="promoCodeInput" placeholder="ONYXWELCOME" autocomplete="off" />
+            </label>
+            <button id="promoClaimBtn" class="secondary full">Claim Code</button>
+            <p class="muted">Try ONYXWELCOME, FREESPIN, or VIPBOOST. Rewards are virtual credits and XP only.</p>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">VIP</p><h2>VIP Rewards</h2></div></div>
+            <div id="vipRewardSummary" class="benefit-list"></div>
+          </section>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Daily Style</p><h2>Missions</h2></div><span id="rewardsMissionProgressText" class="pill">0/0</span></div>
+            <div id="rewardsMissionsList" class="mission-list"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Badges</p><h2>Achievements</h2></div></div>
+            <div id="rewardsAchievementsList" class="achievement-list"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Ledger</p><h2>Recent Reward Claims</h2></div></div>
+            <div id="rewardClaimsList" class="activity-log"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="view-vip" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Club</p><h1>VIP Club</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <section class="panel vip-panel">
+          <div class="vip-hero">
+            <div><span class="label">Current Tier</span><strong id="vipPageTier">Bronze</strong><p id="vipPageProgressText" class="muted">Progress loading</p></div>
+            <div class="xp-track vip-track"><span id="vipPageBar"></span></div>
+          </div>
+          <div id="vipBenefitsList" class="benefit-grid"></div>
+          <div id="vipNextTier" class="vip-next"></div>
+        </section>
+      </section>
+
+      <section id="view-history" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Analytics</p><h1>History</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <section class="panel">
+          <div class="history-filters">
+            <label>Game <select id="historyGameFilter"><option value="all">All games</option></select></label>
+            <label>Result <select id="historyResultFilter"><option value="all">All results</option><option value="win">Wins</option><option value="loss">Losses</option><option value="neutral">Neutral</option></select></label>
+          </div>
+          <div id="historyStats" class="stats-grid"></div>
+          <div id="historyList" class="activity-log"></div>
+        </section>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Account</p><h1>Settings</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <div class="settings-layout">
+          <section class="panel settings-panel">
+            <label>Username
+              <input id="settingsUsernameInput" maxlength="24" autocomplete="off" />
+            </label>
+            <label class="toggle-line"><input id="reducedAnimationsToggle" type="checkbox" /> Reduced animations</label>
+            <label class="toggle-line"><input id="compactModeToggle" type="checkbox" /> Compact mode</label>
+            <label class="toggle-line"><input id="hideWinnersToggle" type="checkbox" /> Hide recent winners feed</label>
+            <div class="game-actions">
+              <button id="settingsSaveBtn" class="primary">Save Settings</button>
+              <button id="replayOnboardingBtn" class="secondary">Replay Onboarding</button>
+              <button class="ghost" data-modal="fakeMoney">Simulator Help</button>
+            </div>
+          </section>
+          <section class="panel settings-panel">
+            <div class="game-actions">
+              <button id="exportSaveBtn" class="secondary">Export Save JSON</button>
+              <button id="importSaveBtn" class="secondary">Import Save JSON</button>
+              <button id="clearHistoryBtn" class="ghost">Clear Only History</button>
+              <button id="resetBtn" class="ghost danger">Reset Save</button>
+            </div>
+            <textarea id="saveJsonBox" rows="10" placeholder="Exported save JSON appears here. Paste JSON here before importing."></textarea>
+          </section>
+        </div>
+      </section>
+
+      <section id="view-slots" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Featured Slot</p><h1>Onyx Slots</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-slots">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <section class="panel machine">
+            <div id="slotReels" class="slot-reels" aria-label="Five slot reels"></div>
+            <div class="game-meta-row">
+              <span id="slotsProjectedText" class="pill">Select chips</span>
+              <label class="toggle-line"><input id="slotsTurboToggle" type="checkbox" /> Turbo spin</label>
+              <span id="slotsFreeSpinsText" class="pill">Free spins: 0</span>
+            </div>
+            <p class="muted">Fictional simulator RTP label: about 95%. This is play-money math only.</p>
+            <div id="slotMessage" class="result-line">Choose a chip and spin with virtual credits.</div>
+            <div class="game-actions">
+              <button id="spinSlotsBtn" class="primary">Spin</button>
+              <button id="slotsRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="slotsDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="slotsHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="slotsMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="slotsClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="slotsPaytableBtn" class="ghost">Paytable</button>
+              <button id="slotsNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Bet Slip</h2><span id="slotsBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="slots"></div>
+            <div class="chip-row" data-chip-group="slots"></div>
+            <div id="slotsSessionStats" class="session-grid"></div>
+            <h3>Spin History</h3>
+            <div id="slotsHistory" class="compact-history"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-roulette" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Table Game</p><h1>European Roulette</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-roulette">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+
+        <div class="roulette-layout">
+          <section class="panel roulette-wheel-panel">
+            <div id="rouletteWheel" class="roulette-wheel"><span id="rouletteNumber">?</span></div>
+            <p id="rouletteResult" class="result-line">Place a virtual-credit bet and spin.</p>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><h2>Roulette Board</h2><span id="rouletteBetText" class="pill">0 credits</span></div>
+            <div class="game-meta-row"><span id="rouletteProjectedText" class="pill">Projected payout updates by bet type</span><span id="rouletteBetTypeText" class="pill">Red 2x</span></div>
+            <div class="bet-stack" data-bet-stack="roulette"></div>
+            <div class="chip-row" data-chip-group="roulette"></div>
+            <div id="rouletteBoard" class="roulette-board"></div>
+            <div class="roulette-options">
+              <button class="bet-option is-active" data-roulette-type="red">Red 2x</button>
+              <button class="bet-option" data-roulette-type="black">Black 2x</button>
+              <button class="bet-option" data-roulette-type="odd">Odd 2x</button>
+              <button class="bet-option" data-roulette-type="even">Even 2x</button>
+              <button class="bet-option" data-roulette-type="low">1-18 2x</button>
+              <button class="bet-option" data-roulette-type="high">19-36 2x</button>
+              <button class="bet-option" data-roulette-type="dozen1">1st 12 3x</button>
+              <button class="bet-option" data-roulette-type="dozen2">2nd 12 3x</button>
+              <button class="bet-option" data-roulette-type="dozen3">3rd 12 3x</button>
+              <button class="bet-option" data-roulette-type="column1">Column 1 3x</button>
+              <button class="bet-option" data-roulette-type="column2">Column 2 3x</button>
+              <button class="bet-option" data-roulette-type="column3">Column 3 3x</button>
+            </div>
+            <div id="rouletteHistory" class="number-history"></div>
+            <div class="game-actions">
+              <button id="spinRouletteBtn" class="primary">Spin Wheel</button>
+              <button id="rouletteRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="rouletteDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="rouletteHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="rouletteMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="rouletteClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="rouletteNewSessionBtn" class="ghost">New Session</button>
+            </div>
+            <div id="rouletteSessionStats" class="session-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="view-blackjack" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Table Game</p><h1>Blackjack Classic</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-blackjack">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <section class="panel blackjack-table">
+            <div class="table-felt">
+              <div class="game-meta-row">
+                <span id="shoeText" class="pill">Shoe: 312 cards</span>
+                <span class="pill">Dealer stands on soft 17</span>
+                <span id="blackjackProjectedText" class="pill">Standard win pays 0 credits</span>
+              </div>
+              <div class="hand-zone">
+                <div class="hand-title"><span>Dealer</span><strong id="dealerTotal"></strong></div>
+                <div id="dealerCards" class="cards"></div>
+              </div>
+              <div class="hand-zone">
+                <div class="hand-title"><span>Player</span><strong id="playerTotal"></strong></div>
+                <div id="playerCards" class="cards"></div>
+              </div>
+              <div id="splitHands" class="split-hands"></div>
+            </div>
+            <p id="blackjackResult" class="result-line">Choose a chip, then deal a fake-money hand.</p>
+            <div class="game-actions">
+              <button id="dealBtn" class="primary">New Hand</button>
+              <button id="hitBtn" class="secondary" disabled>Hit</button>
+              <button id="standBtn" class="secondary" disabled>Stand</button>
+              <button id="doubleBtn" class="secondary" disabled>Double</button>
+              <button id="splitBtn" class="secondary" disabled>Split</button>
+              <button id="blackjackRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="blackjackNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Table Bet</h2><span id="blackjackBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="blackjack"></div>
+            <div class="chip-row" data-chip-group="blackjack"></div>
+            <button id="blackjackDoubleBetBtn" class="secondary full">Double Bet</button>
+            <button id="blackjackHalfBetBtn" class="secondary full">Half Bet</button>
+            <button id="blackjackMaxBetBtn" class="secondary full">Max Bet</button>
+            <button id="blackjackClearBetBtn" class="ghost full">Clear Bet</button>
+            <div id="blackjackSessionStats" class="session-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-dice" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Quick Game</p><h1>Dice Duel</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-dice">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <section class="panel dice-panel">
+            <div id="diceDisplay" class="dice-display">--</div>
+            <div class="risk-controls">
+              <label>Prediction
+                <select id="diceMode">
+                  <option value="over">Roll over target</option>
+                  <option value="under">Roll under target</option>
+                </select>
+              </label>
+              <label>Target <span id="diceTargetText">50</span>
+                <input id="diceTarget" type="range" min="2" max="98" value="50" />
+              </label>
+              <div class="payout-preview"><span>Payout</span><strong id="dicePayoutText">1.96x</strong></div>
+              <div class="payout-preview"><span>Win chance</span><strong id="diceChanceText">49%</strong></div>
+            </div>
+            <div class="game-meta-row"><span id="diceProjectedText" class="pill">Projected payout updates by target</span></div>
+            <p id="diceResult" class="result-line">Higher risk changes the payout.</p>
+            <div id="diceHistory" class="number-history"></div>
+            <div class="game-actions">
+              <button id="rollDiceBtn" class="primary">Roll Dice</button>
+              <button id="diceRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="diceDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="diceHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="diceMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="diceClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="diceNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Dice Bet</h2><span id="diceBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="dice"></div>
+            <div class="chip-row" data-chip-group="dice"></div>
+            <div id="diceSessionStats" class="session-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-mines" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Modern Quick Game</p><h1>Mines</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-mines">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+        <div class="game-layout">
+          <section class="panel mines-panel">
+            <div class="game-meta-row">
+              <label>Mines
+                <select id="minesCount">
+                  <option value="1">1</option><option value="3">3</option><option value="5" selected>5</option>
+                  <option value="10">10</option><option value="15">15</option><option value="20">20</option>
+                </select>
+              </label>
+              <span id="minesMultiplierText" class="pill">1.00x</span>
+              <span id="minesCashoutText" class="pill">Potential 0 credits</span>
+              <span id="minesStateText" class="pill">Waiting</span>
+            </div>
+            <p class="muted">Virtual credits only. No real-money gambling.</p>
+            <div id="minesGrid" class="mines-grid" aria-label="Mines 5 by 5 board"></div>
+            <p id="minesResult" class="result-line">Choose a bet and mine count, then start.</p>
+            <div class="game-actions">
+              <button id="minesStartBtn" class="primary">Start Round</button>
+              <button id="minesCashoutBtn" class="secondary" disabled>Cash Out</button>
+              <button id="minesRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="minesDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="minesHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="minesMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="minesClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="minesNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Mines Bet</h2><span id="minesBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="mines"></div>
+            <div class="chip-row" data-chip-group="mines"></div>
+            <span id="minesProjectedText" class="pill">Potential cashout rises with every safe tile</span>
+            <div id="minesSessionStats" class="session-grid"></div>
+            <h3>Recent Mines Results</h3>
+            <div id="minesHistory" class="compact-history"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-crash" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Modern Quick Game</p><h1>Crash</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-crash">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+        <div class="game-layout">
+          <section class="panel crash-panel">
+            <div id="crashMultiplier" class="crash-multiplier">1.00x</div>
+            <div id="crashGraph" class="crash-graph"><span></span></div>
+            <div class="risk-controls">
+              <label class="toggle-line"><input id="crashAutoToggle" type="checkbox" /> Auto cashout</label>
+              <label>Auto at
+                <input id="crashAutoAt" type="number" min="1.2" max="25" step="0.1" value="2.00" />
+              </label>
+              <div class="payout-preview"><span>Potential</span><strong id="crashPotentialText">0 credits</strong></div>
+            </div>
+            <p class="muted">Virtual credits only. No real-money gambling.</p>
+            <p id="crashResult" class="result-line">Place a bet before launch.</p>
+            <div id="crashHistory" class="number-history"></div>
+            <div class="game-actions">
+              <button id="crashLaunchBtn" class="primary">Launch</button>
+              <button id="crashCashoutBtn" class="secondary" disabled>Cash Out</button>
+              <button id="crashRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="crashDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="crashHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="crashMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="crashClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="crashNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Crash Bet</h2><span id="crashBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="crash"></div>
+            <div class="chip-row" data-chip-group="crash"></div>
+            <span id="crashProjectedText" class="pill">Potential payout rises while the round runs</span>
+            <div id="crashSessionStats" class="session-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-plinko" class="view game-view">
+        <div class="game-header">
+          <div><p class="eyebrow">Modern Quick Game</p><h1>Plinko</h1></div>
+          <div class="header-actions">
+            <button class="ghost" data-modal="rules-plinko">Rules</button>
+            <button class="ghost" data-view="lobby">Back to Lobby</button>
+          </div>
+        </div>
+        <div class="game-layout">
+          <section class="panel plinko-panel">
+            <div class="risk-controls">
+              <label>Risk
+                <select id="plinkoRisk"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+              </label>
+              <label>Rows
+                <select id="plinkoRows"><option value="8">8</option><option value="12" selected>12</option><option value="16">16</option></select>
+              </label>
+              <div class="payout-preview"><span>Risk profile</span><strong id="plinkoRiskText">Balanced</strong></div>
+            </div>
+            <p class="muted">Virtual credits only. No real-money gambling.</p>
+            <div id="plinkoBoard" class="plinko-board" aria-label="Plinko board"></div>
+            <div id="plinkoMultipliers" class="plinko-multipliers"></div>
+            <p id="plinkoResult" class="result-line">Choose a bet and drop a ball.</p>
+            <div id="plinkoHistory" class="compact-history"></div>
+            <div class="game-actions">
+              <button id="plinkoDropBtn" class="primary">Drop Ball</button>
+              <button id="plinkoRepeatBetBtn" class="secondary">Repeat Bet</button>
+              <button id="plinkoDoubleBetBtn" class="secondary">Double Bet</button>
+              <button id="plinkoHalfBetBtn" class="secondary">Half Bet</button>
+              <button id="plinkoMaxBetBtn" class="secondary">Max Bet</button>
+              <button id="plinkoClearBetBtn" class="ghost">Clear Bet</button>
+              <button id="plinkoNewSessionBtn" class="ghost">New Session</button>
+            </div>
+          </section>
+          <aside class="panel">
+            <div class="section-head compact"><h2>Plinko Bet</h2><span id="plinkoBetText" class="pill">0 credits</span></div>
+            <div class="bet-stack" data-bet-stack="plinko"></div>
+            <div class="chip-row" data-chip-group="plinko"></div>
+            <span id="plinkoProjectedText" class="pill">Projected payout depends on risk and final slot</span>
+            <div id="plinkoSessionStats" class="session-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-profile" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Account</p><h1>Profile & Stats</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+
+        <div class="profile-layout">
+          <section class="panel">
+            <label class="profile-name-label">Username
+              <input id="usernameInput" maxlength="24" autocomplete="off" />
+            </label>
+            <button id="saveUsernameBtn" class="primary">Save Username</button>
+            <button class="secondary" data-view="settings">Open Settings</button>
+          </section>
+          <section id="profileStats" class="stats-grid"></section>
+        </div>
+
+        <section class="panel transaction-panel">
+          <div class="section-head compact"><h2>Win/Loss History</h2></div>
+          <div id="profileHistory" class="activity-log"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalLayer" class="modal-layer" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalCloseBtn" class="modal-close" aria-label="Close modal">x</button>
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div id="onboardingLayer" class="modal-layer onboarding-layer" aria-hidden="true">
+    <div class="modal onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <p class="eyebrow">Welcome</p>
+      <h2 id="onboardingTitle">Welcome to Onyx Casino</h2>
+      <p>Play premium casino-style games with virtual credits only. No real-money gambling.</p>
+      <label>Choose your username
+        <input id="onboardingUsername" maxlength="24" value="Guest Player" />
+      </label>
+      <div class="onboarding-grid">
+        <span>Lobby</span><span>Games</span><span>VIP</span><span>Missions</span><span>Daily Bonus</span>
+      </div>
+      <p class="hero-disclaimer">Starter bonus: 10,000 virtual credits</p>
+      <button id="startOnboardingBtn" class="primary full">Start Playing</button>
+    </div>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <button data-view="lobby">Lobby</button>
+    <button data-view="rewards">Rewards</button>
+    <button data-view="vip">VIP</button>
+    <button data-view="history">History</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+
+  <footer class="sim-footer">Onyx Casino uses virtual credits only. No real-money gambling.</footer>
+
+  <script type="module" src="scripts/app.js"></script>
+</body>
+</html>

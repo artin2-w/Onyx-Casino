@@ -1,0 +1,676 @@
+import {
+  ACHIEVEMENTS,
+  CHIP_VALUES,
+  DAILY_REWARDS,
+  PLAYABLE_GAMES,
+  PROMO_CODES,
+  addToSelectedBet,
+  claimDailyBonus,
+  claimMission,
+  claimPromoCode,
+  clearHistory,
+  clearSelectedBet,
+  completeOnboarding,
+  doubleBet,
+  exportSave,
+  favoriteGame,
+  formatCredits,
+  formatProfit,
+  gameLabel,
+  getDailyRewardForStreak,
+  getGameSession,
+  getNextDailyClaimText,
+  getState,
+  getTableLimit,
+  getVipProgress,
+  getVipTier,
+  halfBet,
+  importSave,
+  maxSelectedBet,
+  repeatBet,
+  replayOnboarding,
+  resetGameSession,
+  setSelectedBet,
+  tierRewardMultiplier,
+  updateSettings,
+  updateUsername,
+  xpNeeded
+} from './state.js';
+import { missions } from './missions.js';
+
+export const games = [
+  { id: 'slots', title: 'Onyx Slots', category: ['featured', 'slots'], status: 'Playable', meta: '5 reels, premium symbols', accent: 'gold' },
+  { id: 'roulette', title: 'European Roulette', category: ['featured', 'table'], status: 'Playable', meta: 'Inside and outside bets', accent: 'red' },
+  { id: 'blackjack', title: 'Blackjack Classic', category: ['featured', 'table'], status: 'Playable', meta: 'Hit, stand, double', accent: 'green' },
+  { id: 'dice', title: 'Dice Duel', category: ['featured', 'quick'], status: 'Playable', meta: 'Risk-based payout', accent: 'blue' },
+  { id: 'mines', title: 'Mines', category: ['featured', 'quick', 'new'], status: 'New', meta: 'Reveal gems, avoid mines', accent: 'red' },
+  { id: 'crash', title: 'Crash', category: ['featured', 'quick', 'new'], status: 'Hot', meta: 'Cash out before the crash', accent: 'gold' },
+  { id: 'plinko', title: 'Plinko', category: ['featured', 'quick', 'new'], status: 'New', meta: 'Drop into multiplier slots', accent: 'blue' },
+  { id: 'wheel', title: 'Wheel', category: ['quick'], status: 'Coming soon', meta: 'Spin for credit rewards', accent: 'gold' },
+  { id: 'baccarat', title: 'Baccarat', category: ['table'], status: 'Coming soon', meta: 'Player, banker, tie', accent: 'green' },
+  { id: 'scratch', title: 'Scratch Cards', category: ['slots', 'new'], status: 'Coming soon', meta: 'Instant play-money reveals', accent: 'red' }
+];
+
+const modalCopy = {
+  fakeMoney: {
+    title: 'Fake Money Only',
+    body: '<p>Onyx Casino uses fictional virtual credits only. Credits exist only in this browser save for entertainment and simulation.</p><p>No real-money gambling.</p>'
+  },
+  'rules-lobby': {
+    title: 'How It Works',
+    body: '<p>Start with 10,000 virtual credits, choose chip bets, and play simulated casino games. Playing earns XP, VIP progress, mission rewards, and daily play-money bonuses.</p><p>All balances and rewards are fictional credits only.</p>'
+  },
+  'rules-slots': {
+    title: 'Onyx Slots Rules',
+    body: '<p>Choose a chip bet and spin five reels with three visible rows. Ten fixed paylines are checked left to right. Scatter symbols can trigger free spins when 3 or more land anywhere.</p><p>Buttons: Spin starts a paid spin unless free spins are active. Turbo shortens the simulator animation. Repeat, double, half, and clear adjust the virtual-credit bet.</p><p>Payouts are simulator multipliers only. Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-roulette': {
+    title: 'European Roulette Rules',
+    body: '<p>Only one active bet type is supported for now. Pick a straight number, color, odd/even, low/high, dozen, or column, then spin.</p><p>Red/black, odd/even, and 1-18/19-36 pay 2x. Dozens and columns pay 3x. Straight numbers pay 36x. Zero only wins on straight zero.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-blackjack': {
+    title: 'Blackjack Classic Rules',
+    body: '<p>Blackjack uses a 6-deck shoe. Dealer stands on all 17s, including soft 17. Blackjack pays 3:2 plus your returned bet. Push returns your bet.</p><p>Buttons: New Hand deals, Hit draws, Stand holds, Double doubles the bet and draws once, Split separates matching first cards into two simple hands.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-dice': {
+    title: 'Dice Duel Rules',
+    body: '<p>Pick Roll Over or Roll Under, then set a target from 2 to 98. Win chance is based on how many results beat or fall below that target.</p><p>Projected payout uses a fictional 96% simulator return formula: multiplier = 0.96 / win chance. Higher risk means lower win chance and higher payout.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-mines': {
+    title: 'Mines Rules',
+    body: '<p>Choose a virtual-credit bet and mine count, then start a 5x5 board. Mines are hidden. Revealing safe tiles increases the cashout multiplier.</p><p>Cash out after at least one safe tile to collect bet times multiplier. Hitting a mine ends the round and loses the bet. More mines means higher risk and faster multiplier growth.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-crash': {
+    title: 'Crash Rules',
+    body: '<p>Place a virtual-credit bet and launch. The multiplier rises until the hidden crash point. Cash out before the crash to win bet times current multiplier.</p><p>Optional auto cashout can collect at your target when the round reaches it. If the game crashes first, the bet is lost.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  'rules-plinko': {
+    title: 'Plinko Rules',
+    body: '<p>Choose a bet, risk level, and row count. The ball drops through pegs and lands in a multiplier slot. Low risk is steadier; high risk has bigger edge payouts and more low middle results.</p><p>The highlighted path is simulated and the final slot determines the payout.</p><p>Virtual credits only. No real-money gambling.</p>'
+  },
+  paytable: {
+    title: 'Onyx Slots Paytable',
+    body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
+  }
+};
+
+export function setView(viewName) {
+  document.querySelectorAll('.view').forEach(view => view.classList.remove('is-visible'));
+  document.querySelector(`#view-${viewName}`)?.classList.add('is-visible');
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('is-active', btn.dataset.view === viewName));
+  document.querySelectorAll('.mobile-bottom-nav button').forEach(btn => btn.classList.toggle('is-active', btn.dataset.view === viewName));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+export function renderAll() {
+  renderTopbar();
+  renderGameGrid(currentCategory());
+  renderChipGroups();
+  renderSessionPanels();
+  renderMissions();
+  renderAchievements();
+  renderTransactions();
+  renderRecentWins();
+  renderProfile();
+  renderRewardsPage();
+  renderVipPage();
+  renderHistoryPage();
+  renderSettingsPage();
+  applySettings();
+}
+
+export function renderTopbar() {
+  const state = getState();
+  const vip = getVipProgress();
+  const needed = xpNeeded();
+  const today = new Date().toISOString().slice(0, 10);
+  const claimed = state.dailyBonusDate === today;
+  const nextReward = getDailyRewardForStreak(state.dailyStreak + (claimed ? 0 : 1));
+  const dailyAmount = Math.floor(nextReward.credits * tierRewardMultiplier());
+
+  text('#balanceText', formatCredits(state.balance));
+  text('#levelText', state.level);
+  text('#xpText', `${state.xp.toLocaleString()} / ${needed.toLocaleString()} XP`);
+  document.querySelector('#xpBar').style.width = `${Math.min(100, (state.xp / needed) * 100)}%`;
+  text('#vipText', vip.current.name);
+  document.querySelector('#vipBar').style.width = `${vip.percent}%`;
+  text('#streakText', `${state.dailyStreak} ${state.dailyStreak === 1 ? 'day' : 'days'}`);
+  text('#dailyBonusAmount', `+${formatCredits(dailyAmount)}`);
+  text('#dailyBonusText', claimed ? 'Already claimed today.' : `${vip.current.name} tier bonus available.`);
+  document.querySelector('#dailyBonusBtn').disabled = claimed;
+}
+
+export function renderGameGrid(category = 'featured') {
+  const grid = document.querySelector('#gameGrid');
+  if (!grid) return;
+  grid.innerHTML = games
+    .filter(game => game.category.includes(category))
+    .map(game => {
+      const playable = game.status !== 'Coming soon';
+      return `
+        <article class="game-card accent-${game.accent} ${playable ? '' : 'is-locked'}" ${playable ? `data-open-game="${game.id}"` : ''}>
+          <div class="game-card-top">
+            <span class="game-icon">${gameIcon(game.id)}</span>
+            <span class="status-pill">${game.status}</span>
+          </div>
+          <h3>${game.title}</h3>
+          <p>${game.meta}</p>
+          <button class="${playable ? 'secondary' : 'ghost'} small" ${playable ? '' : 'disabled'}>${playable ? 'Play' : 'Locked'}</button>
+        </article>
+      `;
+    })
+    .join('');
+}
+
+export function renderChipGroups() {
+  document.querySelectorAll('[data-chip-group]').forEach(group => {
+    const game = group.dataset.chipGroup;
+    group.innerHTML = CHIP_VALUES.map(value => `
+      <button class="chip-btn" data-chip-game="${game}" data-chip-value="${value}">${value.toLocaleString()}</button>
+    `).join('');
+  });
+  for (const game of PLAYABLE_GAMES) {
+    const value = getState().selectedBets[game] || 0;
+    text(`#${game}BetText`, formatCredits(value));
+    text(`#${game}ProjectedText`, projectedText(game, value));
+    const stack = document.querySelector(`[data-bet-stack="${game}"]`);
+    if (stack) stack.innerHTML = renderBetStack(value);
+  }
+  updateQuickBetButtons();
+}
+
+export function renderSessionPanels() {
+  for (const game of PLAYABLE_GAMES) {
+    const session = getGameSession(game);
+    const node = document.querySelector(`#${game}SessionStats`);
+    if (!node) continue;
+    node.innerHTML = `
+      <div class="mini-stat"><span>Current bet</span><strong>${formatCredits(getState().selectedBets[game] || 0)}</strong></div>
+      <div class="mini-stat"><span>Session wagered</span><strong>${formatCredits(session.sessionWagered)}</strong></div>
+      <div class="mini-stat"><span>Session profit</span><strong class="${session.sessionProfit >= 0 ? 'win' : 'lose'}">${formatProfit(session.sessionProfit)}</strong></div>
+      <div class="mini-stat"><span>Biggest session win</span><strong>${formatCredits(session.biggestSessionWin)}</strong></div>
+      <div class="session-results">${session.lastResults.length ? session.lastResults.map(item => `<span class="${item.profit > 0 ? 'win' : item.profit < 0 ? 'lose' : ''}">${item.result} ${formatProfit(item.profit)}</span>`).join('') : '<span>No results yet</span>'}</div>
+    `;
+  }
+}
+
+export function renderMissions() {
+  const state = getState();
+  const list = document.querySelector('#missionsList');
+  const completed = missions.filter(mission => (state.missions[mission.id]?.progress || 0) >= mission.target).length;
+  text('#missionProgressText', `${completed}/${missions.length}`);
+  text('#miniMissionText', `${completed}/${missions.length} missions ready or complete.`);
+  if (!list) return;
+  const html = missions.map(mission => {
+    const stored = state.missions[mission.id] || { progress: 0, claimed: false };
+    const progress = Math.min(stored.progress, mission.target);
+    const complete = progress >= mission.target;
+    return `
+      <article class="mission ${complete ? 'is-done' : ''}">
+        <div>
+          <strong>${mission.title}</strong>
+          <p class="muted">${mission.description}</p>
+          <div class="mission-bar"><span style="width:${(progress / mission.target) * 100}%"></span></div>
+          <small>${progress.toLocaleString()} / ${mission.target.toLocaleString()}</small>
+        </div>
+        <button class="secondary small" data-claim-mission="${mission.id}" ${complete && !stored.claimed ? '' : 'disabled'}>
+          ${stored.claimed ? 'Claimed' : `Claim ${formatCredits(mission.rewardCredits)}`}
+        </button>
+      </article>
+    `;
+  }).join('');
+  list.innerHTML = html;
+  const rewardsList = document.querySelector('#rewardsMissionsList');
+  if (rewardsList) rewardsList.innerHTML = html;
+  text('#rewardsMissionProgressText', `${completed}/${missions.length}`);
+}
+
+export function renderAchievements() {
+  const node = document.querySelector('#achievementsList');
+  if (!node) return;
+  const state = getState();
+  node.innerHTML = ACHIEVEMENTS.map(item => {
+    const unlocked = state.achievements[item.id]?.unlocked;
+    return `
+      <article class="achievement ${unlocked ? 'is-done' : ''}">
+        <span class="badge">${item.badge}</span>
+        <div><strong>${item.title}</strong><small>${unlocked ? 'Unlocked' : `Reward ${formatCredits(item.rewardCredits)}`}</small></div>
+      </article>
+    `;
+  }).join('');
+  const rewardsNode = document.querySelector('#rewardsAchievementsList');
+  if (rewardsNode) rewardsNode.innerHTML = node.innerHTML;
+}
+
+export function renderTransactions() {
+  const transactions = getState().transactions;
+  const html = transactions.length ? transactions.map(item => `
+    <article class="log-item">
+      <span>${item.time}</span>
+      <strong>${item.game}</strong>
+      <small>Bet ${formatCredits(item.bet)}</small>
+      <small>${item.result}</small>
+      <b class="${item.profit > 0 ? 'win' : item.profit < 0 ? 'lose' : ''}">${formatProfit(item.profit)}</b>
+    </article>
+  `).join('') : '<p class="muted">No transactions yet. Start with a chip bet to build your history.</p>';
+  document.querySelectorAll('#activityLog, #profileHistory').forEach(node => { node.innerHTML = html; });
+}
+
+export function renderRecentWins() {
+  if (getState().settings.hideRecentWins) {
+    const feed = document.querySelector('#recentWinsFeed');
+    if (feed) feed.innerHTML = '<p class="muted">Recent winners feed is hidden in settings.</p>';
+    return;
+  }
+  const wins = getState().recentWins;
+  const feed = document.querySelector('#recentWinsFeed');
+  if (!feed) return;
+  feed.innerHTML = wins.length ? wins.map(win => `
+    <article class="win-feed-item">
+      <span>${win.time}</span>
+      <strong>${win.game}</strong>
+      <b>+${formatCredits(win.amount)}</b>
+      <small>${win.text}</small>
+    </article>
+  `).join('') : '<p class="muted">Winning results will appear here.</p>';
+}
+
+export function renderProfile() {
+  const state = getState();
+  const tier = getVipTier();
+  const input = document.querySelector('#usernameInput');
+  if (input && document.activeElement !== input) input.value = state.username;
+  const stats = [
+    ['Username', state.username],
+    ['Current VIP', `${tier.name} (${tier.badge})`],
+    ['Total games played', state.stats.totalGamesPlayed],
+    ['Total wagered', formatCredits(state.stats.totalWagered)],
+    ['Biggest win', formatCredits(state.stats.biggestWin)],
+    ['Favorite game', favoriteGame()],
+    ['Session result', formatProfit(state.sessionProfit)],
+    ['Daily streak', `${state.dailyStreak} days`]
+  ];
+  const node = document.querySelector('#profileStats');
+  if (!node) return;
+  node.innerHTML = stats.map(([label, value]) => `
+    <article class="stat">
+      <span class="label">${label}</span>
+      <strong>${value}</strong>
+    </article>
+  `).join('');
+}
+
+export function renderRewardsPage() {
+  const state = getState();
+  const claimed = state.dailyBonusDate === new Date().toISOString().slice(0, 10);
+  const nextStreak = state.dailyStreak + (claimed ? 0 : 1);
+  document.querySelector('#rewardDailyBtn').disabled = claimed;
+  text('#dailyCooldownText', getNextDailyClaimText());
+  const currentDay = getDailyRewardForStreak(nextStreak).day;
+  const multiplier = tierRewardMultiplier();
+  const calendar = document.querySelector('#dailyCalendar');
+  if (calendar) {
+    calendar.innerHTML = DAILY_REWARDS.map(reward => `
+      <article class="daily-day ${reward.day === currentDay ? 'is-current' : ''} ${claimed && reward.day === currentDay ? 'is-claimed' : ''}">
+        <span>Day ${reward.day}</span>
+        <strong>${formatCredits(Math.floor(reward.credits * multiplier))}</strong>
+        <small>${Math.floor(reward.xp * multiplier)} XP</small>
+      </article>
+    `).join('');
+  }
+  const vipSummary = document.querySelector('#vipRewardSummary');
+  if (vipSummary) {
+    vipSummary.innerHTML = [
+      `${getVipTier().name} daily reward multiplier: ${multiplier.toFixed(2)}x`,
+      `Mission reward multiplier: ${getVipTier().missionMultiplier.toFixed(2)}x`,
+      `Current max bet unlock: ${formatCredits(getTableLimit('slots'))}`
+    ].map(item => `<p>${item}</p>`).join('');
+  }
+  const claims = document.querySelector('#rewardClaimsList');
+  if (claims) {
+    claims.innerHTML = state.rewardClaims.length ? state.rewardClaims.map(item => `
+      <article class="log-item"><span>${item.time}</span><strong>${item.source}</strong><small>${item.detail}</small><small>${item.xp} XP</small><b class="win">+${formatCredits(item.credits)}</b></article>
+    `).join('') : '<p class="muted">No reward claims yet.</p>';
+  }
+}
+
+export function renderVipPage() {
+  const state = getState();
+  const progress = getVipProgress();
+  text('#vipPageTier', `${progress.current.name} (${progress.current.badge})`);
+  text('#vipPageProgressText', progress.next ? `${state.lifetimeXp.toLocaleString()} lifetime XP toward ${progress.next.name}` : 'Top VIP tier reached');
+  const bar = document.querySelector('#vipPageBar');
+  if (bar) bar.style.width = `${progress.percent}%`;
+  const benefits = [
+    `Better daily rewards: ${tierRewardMultiplier().toFixed(2)}x`,
+    `Larger mission rewards: ${progress.current.missionMultiplier.toFixed(2)}x`,
+    `Cosmetic badge: ${progress.current.badge}`,
+    `Higher max bet unlock: ${formatCredits(getTableLimit('slots'))}`
+  ];
+  const list = document.querySelector('#vipBenefitsList');
+  if (list) list.innerHTML = benefits.map(item => `<article class="benefit-card">${item}</article>`).join('');
+  const next = document.querySelector('#vipNextTier');
+  if (next) next.innerHTML = progress.next
+    ? `<strong>Next tier: ${progress.next.name}</strong><p class="muted">Unlocks ${progress.next.badge}, ${progress.next.missionMultiplier.toFixed(2)}x mission rewards, and larger table limits.</p>`
+    : '<strong>Onyx tier active</strong><p class="muted">You have reached the highest simulator VIP tier.</p>';
+}
+
+export function renderHistoryPage() {
+  const state = getState();
+  const game = document.querySelector('#historyGameFilter')?.value || 'all';
+  const result = document.querySelector('#historyResultFilter')?.value || 'all';
+  const filtered = state.transactions.filter(item => {
+    const gameOk = game === 'all' || item.game === game;
+    const resultOk = result === 'all' || (result === 'win' && item.profit > 0) || (result === 'loss' && item.profit < 0) || (result === 'neutral' && item.profit === 0);
+    return gameOk && resultOk;
+  });
+  const net = state.transactions.reduce((sum, item) => sum + item.profit, 0);
+  const biggest = [...state.transactions].sort((a, b) => b.profit - a.profit)[0];
+  const stats = [
+    ['Total wagered', formatCredits(state.stats.totalWagered)],
+    ['Net profit/loss', formatProfit(net)],
+    ['Biggest win', biggest && biggest.profit > 0 ? formatCredits(biggest.profit) : '0 credits'],
+    ['Most played', favoriteGame()]
+  ];
+  const statNode = document.querySelector('#historyStats');
+  if (statNode) statNode.innerHTML = stats.map(([label, value]) => `<article class="stat"><span class="label">${label}</span><strong>${value}</strong></article>`).join('');
+  const list = document.querySelector('#historyList');
+  if (list) list.innerHTML = filtered.length ? filtered.map(item => `
+    <article class="log-item"><span>${item.time}</span><strong>${item.game}</strong><small>Bet ${formatCredits(item.bet)}</small><small>${item.result}</small><b class="${item.profit > 0 ? 'win' : item.profit < 0 ? 'lose' : ''}">${formatProfit(item.profit)}</b></article>
+  `).join('') : '<p class="muted">No matching history yet.</p>';
+}
+
+export function renderSettingsPage() {
+  const state = getState();
+  const username = document.querySelector('#settingsUsernameInput');
+  if (username && document.activeElement !== username) username.value = state.username;
+  const reduced = document.querySelector('#reducedAnimationsToggle');
+  const compact = document.querySelector('#compactModeToggle');
+  const hide = document.querySelector('#hideWinnersToggle');
+  if (reduced) reduced.checked = !!state.settings.reducedAnimations;
+  if (compact) compact.checked = !!state.settings.compactMode;
+  if (hide) hide.checked = !!state.settings.hideRecentWins;
+}
+
+export function initSharedUi() {
+  initHistoryFilters();
+  document.querySelector('#categoryTabs')?.addEventListener('click', event => {
+    const tab = event.target.closest('[data-category]');
+    if (!tab) return;
+    document.querySelectorAll('.tab').forEach(btn => btn.classList.toggle('is-active', btn === tab));
+    renderGameGrid(tab.dataset.category);
+  });
+
+  document.body.addEventListener('click', event => {
+    const chip = event.target.closest('[data-chip-value]');
+    if (chip) {
+      addToSelectedBet(chip.dataset.chipGame, Number(chip.dataset.chipValue));
+      renderChipGroups();
+      renderSessionPanels();
+      return;
+    }
+
+    const claim = event.target.closest('[data-claim-mission]');
+    if (claim) {
+      const mission = missions.find(item => item.id === claim.dataset.claimMission);
+      const reward = claimMission(mission);
+      if (reward) toast(`Mission reward: +${formatCredits(reward.credits)}`);
+      renderAll();
+      return;
+    }
+
+    const modal = event.target.closest('[data-modal]');
+    if (modal) openModal(modal.dataset.modal);
+  });
+
+  document.querySelector('#modalCloseBtn')?.addEventListener('click', closeModal);
+  document.querySelector('#modalLayer')?.addEventListener('click', event => {
+    if (event.target.id === 'modalLayer') closeModal();
+  });
+  document.querySelector('#howItWorksBtn')?.addEventListener('click', () => openModal('rules-lobby'));
+  document.querySelector('#saveUsernameBtn')?.addEventListener('click', () => {
+    updateUsername(document.querySelector('#usernameInput').value);
+    toast('Username updated');
+    renderAll();
+  });
+
+  document.querySelector('#rewardDailyBtn')?.addEventListener('click', () => {
+    try {
+      const amount = claimDailyBonus();
+      toast(`Daily reward claimed: +${formatCredits(amount)}`, 'win');
+      document.querySelector('.reward-claim-panel')?.classList.add('is-claiming');
+      setTimeout(() => document.querySelector('.reward-claim-panel')?.classList.remove('is-claiming'), 800);
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#promoClaimBtn')?.addEventListener('click', () => {
+    try {
+      const promo = claimPromoCode(document.querySelector('#promoCodeInput').value);
+      toast(`Promo claimed: +${formatCredits(promo.credits)}`, 'win');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#settingsSaveBtn')?.addEventListener('click', () => {
+    updateUsername(document.querySelector('#settingsUsernameInput').value);
+    updateSettings({
+      reducedAnimations: document.querySelector('#reducedAnimationsToggle').checked,
+      compactMode: document.querySelector('#compactModeToggle').checked,
+      hideRecentWins: document.querySelector('#hideWinnersToggle').checked
+    });
+    toast('Settings saved');
+    renderAll();
+  });
+  document.querySelector('#replayOnboardingBtn')?.addEventListener('click', () => {
+    replayOnboarding();
+    showOnboarding();
+  });
+  document.querySelector('#exportSaveBtn')?.addEventListener('click', () => {
+    document.querySelector('#saveJsonBox').value = exportSave();
+    toast('Save JSON exported');
+  });
+  document.querySelector('#importSaveBtn')?.addEventListener('click', () => {
+    try {
+      importSave(document.querySelector('#saveJsonBox').value);
+      toast('Save imported');
+    } catch {
+      toast('Invalid save JSON', 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#clearHistoryBtn')?.addEventListener('click', () => {
+    if (!confirm('Clear transaction, reward, and recent winner history only?')) return;
+    clearHistory();
+    toast('History cleared');
+    renderAll();
+  });
+  document.querySelector('#startOnboardingBtn')?.addEventListener('click', () => {
+    completeOnboarding(document.querySelector('#onboardingUsername').value);
+    hideOnboarding();
+    toast('Starter bonus ready. Welcome to Onyx Casino.', 'win');
+    renderAll();
+  });
+}
+
+export function wireBetButtons(game) {
+  document.querySelector(`#${game}MaxBetBtn`)?.addEventListener('click', () => {
+    maxSelectedBet(game);
+    renderAll();
+  });
+  document.querySelector(`#${game}ClearBetBtn`)?.addEventListener('click', () => {
+    clearSelectedBet(game);
+    renderAll();
+  });
+  document.querySelector(`#${game}RepeatBetBtn`)?.addEventListener('click', () => {
+    repeatBet(game);
+    renderAll();
+  });
+  document.querySelector(`#${game}DoubleBetBtn`)?.addEventListener('click', () => {
+    doubleBet(game);
+    renderAll();
+  });
+  document.querySelector(`#${game}HalfBetBtn`)?.addEventListener('click', () => {
+    halfBet(game);
+    renderAll();
+  });
+  document.querySelector(`#${game}NewSessionBtn`)?.addEventListener('click', () => {
+    if (!confirm(`Start a new ${gameLabelForUi(game)} session? Lifetime stats stay saved.`)) return;
+    resetGameSession(game);
+    toast('New game session started');
+    renderAll();
+  });
+}
+
+export function disableDuring(button, disabled) {
+  if (button) button.disabled = disabled;
+}
+
+export function openModal(key) {
+  const copy = modalCopy[key];
+  if (!copy) return;
+  text('#modalTitle', copy.title);
+  document.querySelector('#modalBody').innerHTML = copy.body;
+  const layer = document.querySelector('#modalLayer');
+  layer.classList.add('is-visible');
+  layer.setAttribute('aria-hidden', 'false');
+}
+
+export function closeModal() {
+  const layer = document.querySelector('#modalLayer');
+  layer.classList.remove('is-visible');
+  layer.setAttribute('aria-hidden', 'true');
+}
+
+export function toast(message, tone = 'neutral') {
+  const area = document.querySelector('#toastArea');
+  if (area.children.length >= 4) area.firstElementChild?.remove();
+  const node = document.createElement('div');
+  node.className = `toast ${tone}`;
+  node.textContent = message;
+  area.appendChild(node);
+  setTimeout(() => node.remove(), 3400);
+}
+
+export function showOnboarding() {
+  const state = getState();
+  const input = document.querySelector('#onboardingUsername');
+  if (input) input.value = state.username;
+  const layer = document.querySelector('#onboardingLayer');
+  layer.classList.add('is-visible');
+  layer.setAttribute('aria-hidden', 'false');
+}
+
+export function hideOnboarding() {
+  const layer = document.querySelector('#onboardingLayer');
+  layer.classList.remove('is-visible');
+  layer.setAttribute('aria-hidden', 'true');
+}
+
+export function selectedBet(game) {
+  return getState().selectedBets[game] || 0;
+}
+
+export function setBet(game, value) {
+  setSelectedBet(game, value);
+  renderChipGroups();
+}
+
+function currentCategory() {
+  return document.querySelector('.tab.is-active')?.dataset.category || 'featured';
+}
+
+function gameIcon(id) {
+  return {
+    slots: '777',
+    roulette: '36',
+    blackjack: '21',
+    dice: 'D6',
+    mines: 'M',
+    crash: 'X',
+    plinko: 'P',
+    wheel: 'W',
+    baccarat: 'B',
+    scratch: 'SC'
+  }[id] || 'OC';
+}
+
+function text(selector, value) {
+  const node = document.querySelector(selector);
+  if (node) node.textContent = value;
+}
+
+function renderBetStack(value) {
+  if (!value) return '<span class="empty-stack">No chips selected</span>';
+  const chips = [];
+  let remaining = value;
+  for (const chip of [...CHIP_VALUES].sort((a, b) => b - a)) {
+    while (remaining >= chip && chips.length < 14) {
+      chips.push(chip);
+      remaining -= chip;
+    }
+  }
+  if (remaining > 0) chips.push(remaining);
+  return chips.map((chip, index) => `<span class="stack-chip" style="--i:${index}">${chip >= 1000 ? '1K' : chip}</span>`).join('');
+}
+
+function projectedText(game, bet) {
+  if (!bet) return 'Select chips';
+  if (game === 'slots') return 'Line pays vary; scatters can trigger free spins';
+  if (game === 'roulette') return 'Projected payout updates by bet type';
+  if (game === 'blackjack') return `Standard win pays ${formatCredits(bet * 2)}`;
+  if (game === 'dice') return 'Projected payout updates by target';
+  if (game === 'mines') return 'Potential cashout rises with every safe tile';
+  if (game === 'crash') return 'Potential payout rises while the round runs';
+  if (game === 'plinko') return 'Projected payout depends on risk and final slot';
+  return formatCredits(bet);
+}
+
+function updateQuickBetButtons() {
+  const state = getState();
+  for (const game of PLAYABLE_GAMES) {
+    const bet = state.selectedBets[game] || 0;
+    const last = state.lastBets[game] || 0;
+    const balance = state.balance;
+    const table = getTableLimit(game);
+    toggle(`#${game}RepeatBetBtn`, last > 0 && last <= balance && last <= table);
+    toggle(`#${game}DoubleBetBtn`, bet > 0 && bet * 2 <= balance && bet * 2 <= table);
+    toggle(`#${game}HalfBetBtn`, bet >= 20);
+    toggle(`#${game}ClearBetBtn`, bet > 0);
+    const playButton = { slots: '#spinSlotsBtn', roulette: '#spinRouletteBtn', blackjack: '#dealBtn', dice: '#rollDiceBtn', mines: '#minesStartBtn', crash: '#crashLaunchBtn', plinko: '#plinkoDropBtn' }[game];
+    if (game === 'blackjack' && document.querySelector('#hitBtn') && !document.querySelector('#hitBtn').disabled) continue;
+    toggle(playButton, bet > 0 && bet <= balance && bet <= table);
+  }
+}
+
+function toggle(selector, enabled) {
+  const node = document.querySelector(selector);
+  if (node) node.disabled = !enabled;
+}
+
+function gameLabelForUi(game) {
+  return { slots: 'slots', roulette: 'roulette', blackjack: 'blackjack', dice: 'dice', mines: 'mines', crash: 'crash', plinko: 'plinko' }[game] || game;
+}
+
+function initHistoryFilters() {
+  const gameFilter = document.querySelector('#historyGameFilter');
+  if (gameFilter && gameFilter.options.length <= 1) {
+    const labels = ['Rewards', 'Missions', 'Achievements', 'Promo', 'Level Up', ...PLAYABLE_GAMES.map(gameLabel)];
+    labels.forEach(label => {
+      const option = document.createElement('option');
+      option.value = label;
+      option.textContent = label;
+      gameFilter.appendChild(option);
+    });
+  }
+  document.querySelector('#historyGameFilter')?.addEventListener('change', renderHistoryPage);
+  document.querySelector('#historyResultFilter')?.addEventListener('change', renderHistoryPage);
+}
+
+function applySettings() {
+  const settings = getState().settings;
+  document.body.classList.toggle('reduced-motion', !!settings.reducedAnimations);
+  document.body.classList.toggle('compact-mode', !!settings.compactMode);
+}
