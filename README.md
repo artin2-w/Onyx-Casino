@@ -1,86 +1,87 @@
-# Onyx Casino v0.5 - Virtual Credits Casino Simulator
+# Onyx Casino Version 1: The Live Casino
 
-Onyx Casino is a browser-based fake-money casino simulator built with HTML, CSS, and vanilla JavaScript modules.
+Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 1 turns the project into a living casino platform with atmosphere, simulated social activity, rotating events, Vault progression, cosmetics, profile identity, and daily return hooks.
 
-## Safety Rule
+## Fake-Money Clarification
 
-This project is fake-money only. The player only uses virtual credits saved in localStorage, and the app is a browser-local simulator.
+Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, and cosmetics exist only inside the browser save. This project does not provide real-money gambling.
 
-## Included Features
+## Version 1 Highlights
 
-- Premium dark onyx casino lobby
-- Mobile-first responsive layout
-- Starting balance of 10,000 virtual credits
-- Shared chip-style bet selectors using credit amounts
-- Daily bonus with cooldown and streak tracking
-- XP, levels, VIP tiers, and VIP progress
-- Mission rewards and recent wins feed
-- Profile screen with username, favorite game, wagering stats, and reset
-- Transaction history with game, bet, result, profit/loss, and time
-- Per-game sessions with session wagered, session profit, recent results, and reset
-- Quick bet flow: repeat, double, half, clear, max, and visual chip stacks
-- Achievements with badges and small virtual credit/XP rewards
-- Rules, paytable, fake-money info, and how-it-works modals
-- Four playable game modules:
-  - Onyx Slots with 5 reels, 3 visible rows, 10 paylines, scatters, free spins, turbo toggle, and spin history
-  - European Roulette with 0-36 board, outside bets, dozens, columns, straight bets, and number history
-  - Blackjack Classic with a 6-deck shoe, soft-total display, double, split, and dealer stand-on-soft-17 rule
-  - Dice Duel with roll over/under, target 2-98, win chance, projected payout, and roll history
-- Audio-ready `onyx:sound` event hooks without bundled audio files
-- v0.4 modern casino games:
-  - Mines: 5x5 grid, selectable mine count, rising multiplier, cashout, reveal history
-  - Crash: rising multiplier, generated crash point, manual/auto cashout, graph, crash history
-  - Plinko: low/medium/high risk, 8/12/16 rows, animated peg path, multiplier slots, drop history
-- New missions for Mines safe reveals, Crash cashouts, Plinko drops, and high-risk wins
-- New achievements for Mines, Crash, and Plinko milestones
-- v0.5 platform polish:
-  - First-time onboarding with username setup and starter virtual-credit bonus
-  - 7-day daily login reward calendar with VIP scaling
-  - Reward Center with daily reward, missions, achievements, VIP rewards, promo-style fake codes, and reward claim history
-  - VIP Club page with current tier, tier progress, benefits, and next-tier preview
-  - History page with filters, biggest wins, total wagered, net result, and most-played game
-  - Settings page with username, reduced animations, compact mode, recent winners visibility, save export/import, history clearing, reset, and onboarding replay
-  - Mobile bottom navigation and clearer platform sections
-  - Ambient background polish, reward claim animation, improved empty states, and simulator clarity footer
+- Live Casino system with simulated online player count, activity ticker, table signals, hot game rotation, player names, and VIP rank moments
+- Tonight at Onyx event system with rotating events, countdowns, color palettes, featured games, XP boosts, Vault boosts, reward boosts, and event history
+- The Vault long-term progression system with Vault XP, keys, Daily/Elite/Mega crates, rarity tiers, reward reveal animation, duplicate protection, and cosmetic inventory
+- Cosmetic identity system with profile borders, chip skins, card backs, roulette themes, lobby themes, VIP-flavored prestige, and equipped visuals across the UI
+- Big win system with Mega/Massive/Legendary win states, glow overlays, coin rain, and reduced-motion respect
+- Retention prompts for near-level-up, mission completion, Vault progress, daily streak continuation, and comeback recovery rewards
+- Expanded profile with prestige title, Vault level, equipped cosmetics, favorite game, VIP status, lifetime stats, and badge showcase
+- Premium atmosphere pass with event-based ambience, animated particles, richer hierarchy, stronger mobile layout, and polished interaction states
 
-## File Structure
+## Playable Games
 
-```txt
-onyx-casino-starter/
-  index.html
-  styles/main.css
-  scripts/app.js
-  scripts/state.js
-  scripts/ui.js
-  scripts/missions.js
-  scripts/games/slots.js
-  scripts/games/roulette.js
-  scripts/games/blackjack.js
-  scripts/games/dice.js
-  scripts/games/mines.js
-  scripts/games/crash.js
-  scripts/games/plinko.js
-  data/missions.js
-```
+- Onyx Slots
+- European Roulette
+- Blackjack Classic
+- Dice Duel
+- Mines
+- Crash
+- Plinko
 
-## Known Limitations
+All playable games remain connected to the shared economy, XP, VIP tiers, missions, achievements, transactions, session stats, sound hooks, Vault XP, and big-win effects.
 
-- Mines, Crash, and Plinko are browser-local simulator games and are not provably fair real-money games.
-- Crash timing is intentionally short for a smooth browser-game pace.
-- Plinko path animation is visualized as peg highlights rather than a physics engine.
-- All save data stays in localStorage and can be reset from the profile panel.
-- Promo codes are local simulated rewards only and can be claimed once per browser save.
-- Export/import expects the app's JSON save shape and performs basic validation before loading.
+## Platform Sections
 
-## How to Run
+- Lobby: live floor, Tonight at Onyx, game cards, missions, achievements, recent wins, and transactions
+- Rewards: daily calendar, missions, achievements, VIP rewards, promo-style local codes, and reward claims
+- Vault: crates, keys, Vault XP, cosmetic inventory, recent reveals, and equip controls
+- VIP: tier progress, benefits, max bet unlocks, and next-tier preview
+- Profile: username, prestige title, cosmetic profile card, favorite game, Vault level, VIP status, and lifetime stats
+- History: transaction analytics and filters
+- Settings: username, sound, reduced animations, compact mode, save export/import, history clearing, reset, and known limitations
+- Help: simulator explanation, balance/VIP/missions/game guidance, and localStorage troubleshooting
 
-Because the project uses JavaScript modules, open it with a local server.
+## How to Run Locally
+
+Because the app uses JavaScript modules, run it through a local static server.
 
 In VS Code:
 
 1. Install the Live Server extension.
 2. Open the `onyx-casino-starter` folder.
 3. Right-click `index.html`.
-4. Click Open with Live Server.
+4. Choose `Open with Live Server`.
 
-Do not add real-money mechanics to this project.
+Any simple static server also works:
+
+```bash
+npx serve .
+```
+
+## Version History
+
+- v0.1: Starter fake-credit lobby and early game loop
+- v0.2: Premium lobby, virtual-credit economy, VIP, profile, missions, and transactions
+- v0.3: Deeper sessions, bet slip, slots paylines/free spins, roulette board, blackjack shoe, dice math, and achievements
+- v0.4: Mines, Crash, and Plinko added as full playable modern games
+- v0.5: Onboarding, daily calendar, Reward Center, VIP Club, History, Settings, import/export, and app shell polish
+- v0.6: Visual identity overhaul, CSS-only brand assets, Help Center, public alpha labeling, sound manager, accessibility pass, and release notes
+- Version 1: Live Casino systems, Tonight at Onyx, The Vault, cosmetics, prestige identity, big-win effects, atmosphere, retention prompts, and platform polish
+
+## Known Limitations
+
+- Live players, table activity, hot games, and events are simulated ambience systems.
+- Vault rewards and cosmetics are local browser-save collectibles.
+- Plinko uses a visualized path rather than a physics engine.
+- Crash rounds are tuned for short browser sessions.
+- Sound effects use lightweight generated tones.
+- Save data is local to the current browser and device unless exported.
+- Wheel, Baccarat, and Scratch Cards remain locked cards for future expansion.
+
+## Roadmap Preview
+
+- Version 2 live host-style lobby moments and richer event scripting
+- More playable games and deeper table variants
+- More Vault collectible sets and cosmetic previews
+- Optional authored audio assets behind the existing sound manager
+- Enhanced keyboard shortcuts and accessibility announcements per game
+- Wider mobile browser QA before a broader beta

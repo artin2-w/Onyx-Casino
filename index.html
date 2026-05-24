@@ -16,18 +16,21 @@
   <div class="app-shell">
     <aside class="sidebar" aria-label="Main navigation">
       <button class="brand" data-view="lobby" aria-label="Open Onyx Casino lobby">
-        <span class="brand-mark">O</span>
+        <span class="brand-mark" aria-hidden="true"><span class="onyx-logo-mark"></span></span>
         <span>
           <strong>Onyx Casino</strong>
           <small>Play-money lobby</small>
         </span>
       </button>
+      <button class="alpha-pill" data-modal="whats-new">Version 1 - The Live Casino</button>
 
       <nav class="nav-list">
         <button class="nav-btn is-active" data-view="lobby">Lobby</button>
         <button class="nav-btn" data-view="rewards">Rewards</button>
+        <button class="nav-btn" data-view="vault">Vault</button>
         <button class="nav-btn" data-view="vip">VIP</button>
         <button class="nav-btn" data-view="history">History</button>
+        <button class="nav-btn" data-view="help">Help</button>
         <button class="nav-btn" data-view="settings">Settings</button>
         <button class="nav-btn" data-view="slots">Onyx Slots</button>
         <button class="nav-btn" data-view="roulette">Roulette</button>
@@ -86,6 +89,21 @@
       <section id="toastArea" class="toast-area" aria-live="polite"></section>
 
       <section id="view-lobby" class="view is-visible">
+        <section class="live-floor-strip" aria-label="Simulated live casino status">
+          <div><span class="live-dot"></span><strong id="onlinePlayersText">145 players online</strong><small>Simulated floor activity</small></div>
+          <div><span class="label">Hot Game</span><strong id="hotGameText">Crash</strong></div>
+          <div id="retentionPrompts" class="retention-prompts"><span>The floor is steady. Play at your own pace.</span></div>
+          <button id="comebackRewardBtn" class="secondary small" disabled>Claim Comeback Reward</button>
+        </section>
+
+        <section id="tonightAtOnyx" class="event-banner" data-palette="diamond">
+          <div>
+            <p class="eyebrow">Tonight at Onyx</p>
+            <h2>Diamond Rush</h2>
+            <p>Vault XP glitters across the floor.</p>
+          </div>
+        </section>
+
         <div class="hero-panel">
           <div class="hero-copy-block">
             <p class="eyebrow">Premium casino simulator</p>
@@ -95,6 +113,7 @@
             <div class="hero-actions">
               <button class="primary" data-open-game="slots">Play Featured Game</button>
               <button class="secondary" data-modal="rules-lobby">View Lobby Guide</button>
+              <button class="ghost" data-modal="whats-new">What's New in Version 1</button>
             </div>
           </div>
           <div class="hero-stage" aria-hidden="true">
@@ -106,6 +125,18 @@
         </div>
 
         <section class="lobby-band">
+          <div class="live-casino-grid">
+            <section class="panel live-panel">
+              <div class="section-head compact"><div><p class="eyebrow">Live Casino</p><h2>Activity Ticker</h2></div><span class="pill">Simulated</span></div>
+              <div id="liveTicker" class="live-ticker"></div>
+            </section>
+            <section class="panel live-panel">
+              <div class="section-head compact"><div><p class="eyebrow">Tables</p><h2>Floor Signals</h2></div></div>
+              <div id="tableActivityList" class="table-activity"></div>
+              <div id="eventHistoryList" class="event-history"></div>
+            </section>
+          </div>
+
           <div class="recommended-row">
             <button class="recommend-card" data-open-game="mines"><span>Fast Games</span><strong>Mines</strong></button>
             <button class="recommend-card" data-open-game="roulette"><span>Table Games</span><strong>Roulette</strong></button>
@@ -213,6 +244,36 @@
         </div>
       </section>
 
+      <section id="view-vault" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Progression</p><h1>The Vault</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <section class="panel vault-hero">
+          <div>
+            <p class="eyebrow">Vault Progress</p>
+            <h2 id="vaultLevelText">Level 1</h2>
+            <p id="vaultXpText" class="muted">0 / 0 Vault XP</p>
+          </div>
+          <div class="xp-track vault-track"><span id="vaultBar"></span></div>
+          <span id="vaultKeysText" class="pill">0 keys</span>
+        </section>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Crates</p><h2>Open Rewards</h2></div></div>
+            <div id="vaultCrates" class="vault-crates"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Inventory</p><h2>Cosmetics</h2></div><span class="pill">Equip to flex</span></div>
+            <div id="vaultInventory" class="cosmetic-grid"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Recent</p><h2>Vault Reveals</h2></div></div>
+            <div id="vaultRecentRewards" class="activity-log"></div>
+          </section>
+        </div>
+      </section>
+
       <section id="view-vip" class="view">
         <div class="game-header">
           <div><p class="eyebrow">Club</p><h1>VIP Club</h1></div>
@@ -254,6 +315,7 @@
               <input id="settingsUsernameInput" maxlength="24" autocomplete="off" />
             </label>
             <label class="toggle-line"><input id="reducedAnimationsToggle" type="checkbox" /> Reduced animations</label>
+            <label class="toggle-line"><input id="soundToggle" type="checkbox" /> Sound effects</label>
             <label class="toggle-line"><input id="compactModeToggle" type="checkbox" /> Compact mode</label>
             <label class="toggle-line"><input id="hideWinnersToggle" type="checkbox" /> Hide recent winners feed</label>
             <div class="game-actions">
@@ -270,6 +332,58 @@
               <button id="resetBtn" class="ghost danger">Reset Save</button>
             </div>
             <textarea id="saveJsonBox" rows="10" placeholder="Exported save JSON appears here. Paste JSON here before importing."></textarea>
+          </section>
+        </div>
+        <section class="panel alpha-panel">
+          <div class="section-head compact">
+            <div><p class="eyebrow">Public Alpha</p><h2>Known Limitations</h2></div>
+            <span class="pill">Version 1</span>
+          </div>
+          <div class="known-grid">
+            <article>All game math is simulated locally for entertainment.</article>
+            <article>Progress is stored in this browser with localStorage.</article>
+            <article>Sound uses lightweight generated tones, not final audio assets.</article>
+            <article>Coming-soon lobby cards remain locked until future updates.</article>
+            <article>Live players, events, and table signals are simulated atmosphere systems.</article>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-help" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Support</p><h1>Help Center</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <div class="help-grid">
+          <section class="panel help-card">
+            <span class="help-icon icon-onyx"></span>
+            <h2>What is Onyx Casino?</h2>
+            <p>Onyx Casino is a browser-based casino simulator built around fictional virtual credits, local progression, missions, and playable games.</p>
+          </section>
+          <section class="panel help-card">
+            <span class="help-icon icon-chip"></span>
+            <h2>Virtual credits only</h2>
+            <p>Credits are play money stored in your browser save. They cannot become anything outside the simulator.</p>
+          </section>
+          <section class="panel help-card">
+            <span class="help-icon icon-vip"></span>
+            <h2>Balance and VIP</h2>
+            <p>Playing games wagers credits, awards XP, and moves your VIP progress. Higher tiers improve simulated reward amounts and table limits.</p>
+          </section>
+          <section class="panel help-card">
+            <span class="help-icon icon-mission"></span>
+            <h2>Missions and rewards</h2>
+            <p>Daily-style missions, achievements, promo-style codes, and the reward calendar grant virtual credits and XP only.</p>
+          </section>
+          <section class="panel help-card wide">
+            <span class="help-icon icon-games"></span>
+            <h2>Playable games</h2>
+            <p>Slots use paylines, scatters, and free spins. Roulette supports one active bet type at a time. Blackjack uses a six-deck shoe. Dice, Mines, Crash, and Plinko use risk-based simulator multipliers.</p>
+          </section>
+          <section class="panel help-card wide">
+            <span class="help-icon icon-tools"></span>
+            <h2>Troubleshooting</h2>
+            <p>If something looks wrong, export your save from Settings, then try reset save. Import accepts only valid Onyx save JSON. localStorage means your progress lives in this browser on this device.</p>
           </section>
         </div>
       </section>
@@ -610,6 +724,7 @@
             <button id="saveUsernameBtn" class="primary">Save Username</button>
             <button class="secondary" data-view="settings">Open Settings</button>
           </section>
+          <section id="profileShowcase" class="panel profile-showcase"></section>
           <section id="profileStats" class="stats-grid"></section>
         </div>
 
@@ -645,11 +760,29 @@
     </div>
   </div>
 
+  <div id="vaultRevealLayer" class="vault-reveal-layer" aria-live="polite" aria-hidden="true">
+    <div>
+      <span data-vault-reveal-rarity>Rare</span>
+      <h2 data-vault-reveal-name>Vault Reward</h2>
+      <p data-vault-reveal-detail>Cosmetic unlocked.</p>
+    </div>
+  </div>
+
+  <div id="bigWinLayer" class="big-win-layer" aria-live="polite" aria-hidden="true">
+    <div class="coin-rain" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div>
+      <span data-big-win-tier>Mega Win</span>
+      <h2 data-big-win-amount>0 credits</h2>
+      <p data-big-win-game>Onyx Casino</p>
+    </div>
+  </div>
+
   <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
     <button data-view="lobby">Lobby</button>
     <button data-view="rewards">Rewards</button>
+    <button data-view="vault">Vault</button>
     <button data-view="vip">VIP</button>
-    <button data-view="history">History</button>
+    <button data-view="help">Help</button>
     <button data-view="settings">Settings</button>
   </nav>
 

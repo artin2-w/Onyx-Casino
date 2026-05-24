@@ -7,9 +7,21 @@ import { initDice } from './games/dice.js';
 import { initMines } from './games/mines.js';
 import { initCrash } from './games/crash.js';
 import { initPlinko } from './games/plinko.js';
+import { initSoundManager } from './sound.js';
+import { initEventSystem } from './events.js';
+import { initLiveCasino } from './liveCasino.js';
+import { initAtmosphere } from './atmosphere.js';
+import { initCosmetics } from './cosmetics.js';
+import { initVaultUi } from './vault.js';
 
 loadState();
 initSharedUi();
+initSoundManager();
+initEventSystem();
+initCosmetics();
+initAtmosphere();
+initLiveCasino();
+initVaultUi();
 initNavigation();
 initSlots();
 initRoulette();
@@ -44,6 +56,7 @@ function initNavigation() {
     const ok = confirm('Reset your Onyx Casino browser save? This removes credits, profile stats, transactions, and mission progress.');
     if (!ok) return;
     resetState();
-    toast('Save reset. Starting balance restored to 10,000 credits.');
+    toast('Save reset. Onboarding will restore the starter bonus.');
+    showOnboarding();
   });
 }

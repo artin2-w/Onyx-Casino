@@ -1,5 +1,5 @@
-const SAVE_KEY = 'onyxCasinoSaveV5';
-const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV4', 'onyxCasinoSaveV3', 'onyxCasinoSaveV2'];
+const SAVE_KEY = 'onyxCasinoSaveV1';
+const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV6', 'onyxCasinoSaveV5', 'onyxCasinoSaveV4', 'onyxCasinoSaveV3', 'onyxCasinoSaveV2'];
 
 export const PLAYABLE_GAMES = ['slots', 'roulette', 'blackjack', 'dice', 'mines', 'crash', 'plinko'];
 export const CHIP_VALUES = [10, 25, 50, 100, 250, 500, 1000];
@@ -48,6 +48,67 @@ export const ACHIEVEMENTS = [
   { id: 'plinkoOuterSlot', title: 'Outer Slot Hit', badge: 'EDGE', rewardCredits: 1100, rewardXp: 240 }
 ];
 
+export const VAULT_CRATES = {
+  daily: { label: 'Daily Vault', keyCost: 1, xp: 350 },
+  elite: { label: 'Elite Vault', keyCost: 3, xp: 950 },
+  mega: { label: 'Mega Vault', keyCost: 7, xp: 2200 }
+};
+
+export const COSMETICS = [
+  { id: 'border-gold', name: 'Gilded Edge', type: 'profileBorder', rarity: 'Common', className: 'cos-border-gold' },
+  { id: 'border-crimson', name: 'Crimson Halo', type: 'profileBorder', rarity: 'Rare', className: 'cos-border-crimson' },
+  { id: 'border-neon', name: 'Neon Luxe Frame', type: 'profileBorder', rarity: 'Epic', className: 'cos-border-neon' },
+  { id: 'border-onyx', name: 'Onyx Legend Frame', type: 'profileBorder', rarity: 'Onyx', className: 'cos-border-onyx' },
+  { id: 'chip-obsidian', name: 'Obsidian Chip', type: 'chipSkin', rarity: 'Common', className: 'chip-obsidian' },
+  { id: 'chip-crimson', name: 'Crimson Gold Chip', type: 'chipSkin', rarity: 'Rare', className: 'chip-crimson' },
+  { id: 'chip-vault', name: 'Vault Coin Chip', type: 'chipSkin', rarity: 'Legendary', className: 'chip-vault' },
+  { id: 'cards-midnight', name: 'Midnight Card Backs', type: 'cardBack', rarity: 'Rare', className: 'cards-midnight' },
+  { id: 'cards-onyx', name: 'Onyx Filigree Cards', type: 'cardBack', rarity: 'Epic', className: 'cards-onyx' },
+  { id: 'roulette-blood', name: 'Blood Hour Wheel', type: 'rouletteTheme', rarity: 'Epic', className: 'roulette-blood' },
+  { id: 'lobby-midnight', name: 'Midnight Black', type: 'lobbyTheme', rarity: 'Common', className: 'theme-midnight' },
+  { id: 'lobby-crimson', name: 'Crimson Gold', type: 'lobbyTheme', rarity: 'Rare', className: 'theme-crimson' },
+  { id: 'lobby-neon', name: 'Neon Luxe', type: 'lobbyTheme', rarity: 'Epic', className: 'theme-neon' },
+  { id: 'lobby-vip', name: 'VIP Obsidian', type: 'lobbyTheme', rarity: 'Legendary', className: 'theme-vip' }
+];
+
+const defaultLiveCasino = () => ({
+  onlinePlayers: 145,
+  hotGame: 'crash',
+  activities: [],
+  tableActivity: [],
+  updatedAt: null
+});
+
+const defaultTonightAtOnyx = () => ({
+  activeEventId: 'diamondRush',
+  endsAt: null,
+  xpMultiplier: 1.1,
+  vaultMultiplier: 1.15,
+  rewardMultiplier: 1,
+  palette: 'diamond',
+  history: []
+});
+
+const defaultVault = () => ({
+  level: 1,
+  xp: 0,
+  keys: 0,
+  crates: { daily: 0, elite: 0, mega: 0 },
+  inventory: ['border-gold', 'chip-obsidian', 'lobby-midnight'],
+  recentRewards: [],
+  lastReveal: null
+});
+
+const defaultCosmetics = () => ({
+  equipped: {
+    profileBorder: 'border-gold',
+    chipSkin: 'chip-obsidian',
+    cardBack: 'cards-midnight',
+    rouletteTheme: 'roulette-blood',
+    lobbyTheme: 'lobby-midnight'
+  }
+});
+
 const defaultGameSession = () => ({
   sessionWagered: 0,
   sessionProfit: 0,
@@ -65,7 +126,7 @@ const defaultSessions = () => Object.fromEntries(PLAYABLE_GAMES.map(game => [gam
 const defaultAchievements = () => Object.fromEntries(ACHIEVEMENTS.map(item => [item.id, { unlocked: false, unlockedAt: null }]));
 
 export const defaultState = {
-  version: 5,
+  version: 1,
   username: 'Guest Player',
   balance: 0,
   level: 1,
@@ -83,7 +144,17 @@ export const defaultState = {
   settings: {
     reducedAnimations: false,
     compactMode: false,
-    hideRecentWins: false
+    hideRecentWins: false,
+    soundEnabled: true
+  },
+  liveCasino: defaultLiveCasino(),
+  tonightAtOnyx: defaultTonightAtOnyx(),
+  vault: defaultVault(),
+  cosmetics: defaultCosmetics(),
+  retention: {
+    comebackClaimedDate: null,
+    lastPromptAt: null,
+    luckyStreak: 0
   },
   selectedBets: { slots: 100, roulette: 100, blackjack: 100, dice: 100, mines: 100, crash: 100, plinko: 100 },
   lastBets: { slots: 100, roulette: 100, blackjack: 100, dice: 100, mines: 100, crash: 100, plinko: 100 },
@@ -201,6 +272,7 @@ export function placeBet(game, amount) {
   session.sessionWagered += bet;
   session.sessionProfit -= bet;
   addXP(Math.max(5, Math.floor(bet / 20)), false);
+  addVaultProgress(Math.max(3, Math.floor(bet / 35)), false);
   updateMissionProgress('wager1000', bet);
   if (game === 'slots') updateMissionProgress('slots5', 1);
   if (game === 'blackjack') updateMissionProgress('blackjack3', 1);
@@ -241,6 +313,7 @@ export function settleBet({ game, bet, payout = 0, result = 'Loss', detail = '',
     state.stats.biggestWin = Math.max(state.stats.biggestWin, profit, paid);
     session.biggestSessionWin = Math.max(session.biggestSessionWin, profit, paid);
     addXP(Math.max(8, Math.floor(paid / 30)), false);
+    addVaultProgress(Math.max(4, Math.floor(profit / 45)), false);
   }
 
   if (profit > 0) unlockAchievement('firstWin');
@@ -281,6 +354,7 @@ export function settleBet({ game, bet, payout = 0, result = 'Loss', detail = '',
     state.recentWins.unshift({ game: gameLabel(game), amount: profit, text: detail || result, time: transaction.time });
     state.recentWins = state.recentWins.slice(0, 8);
     emitSoundHook('win', { game, profit });
+    emitBigWinHook(game, profit, wager);
   } else if (profit < 0) {
     emitSoundHook('loss', { game, profit });
   }
@@ -320,6 +394,7 @@ export function claimDailyBonus() {
   state.transactions.unshift({ id: id(), game: 'Rewards', bet: 0, result: `Daily Day ${reward.day}`, profit: amount, detail: `${tier.name} daily calendar reward`, time: timeNow() });
   state.transactions = state.transactions.slice(0, 24);
   addRewardClaim(`Daily Day ${reward.day}`, amount, xp, `${tier.name} multiplier`);
+  addVaultCrate('daily', 1, false);
   emitSoundHook('bonus-claim', { amount });
   saveState();
   return amount;
@@ -353,12 +428,13 @@ export function claimMission(mission) {
   state.transactions.unshift({ id: id(), game: 'Missions', bet: 0, result: 'Reward Claimed', profit: credits, detail: mission.title, time: timeNow() });
   state.transactions = state.transactions.slice(0, 24);
   addRewardClaim(mission.title, credits, xp, 'Mission reward');
+  addVaultProgress(Math.max(20, Math.floor(xp / 2)), false);
   saveState();
   return { credits, xp };
 }
 
 export function addXP(amount, shouldSave = true) {
-  const gain = Math.max(0, Math.floor(Number(amount) || 0));
+  const gain = Math.max(0, Math.floor((Number(amount) || 0) * getEventXpMultiplier()));
   state.xp += gain;
   state.lifetimeXp += gain;
   while (state.xp >= xpNeeded()) {
@@ -370,6 +446,108 @@ export function addXP(amount, shouldSave = true) {
   }
   checkTierAchievements();
   if (shouldSave) saveState();
+}
+
+export function addVaultProgress(amount, shouldSave = true) {
+  const gain = Math.max(0, Math.floor((Number(amount) || 0) * getEventVaultMultiplier()));
+  if (!gain) return;
+  state.vault.xp += gain;
+  // Vault levels are long-term progression: every level grants a key, milestone levels add crates.
+  while (state.vault.xp >= vaultXpNeeded()) {
+    state.vault.xp -= vaultXpNeeded();
+    state.vault.level += 1;
+    state.vault.keys += 1;
+    if (state.vault.level % 5 === 0) addVaultCrate('elite', 1, false);
+    if (state.vault.level % 10 === 0) addVaultCrate('mega', 1, false);
+  }
+  if (shouldSave) saveState();
+}
+
+export function addVaultCrate(type, amount = 1, shouldSave = true) {
+  const key = VAULT_CRATES[type] ? type : 'daily';
+  state.vault.crates[key] = safeNumber(state.vault.crates[key], 0) + Math.max(0, Math.floor(Number(amount) || 0));
+  if (shouldSave) saveState();
+}
+
+export function openVaultCrate(type) {
+  const key = VAULT_CRATES[type] ? type : 'daily';
+  const crate = VAULT_CRATES[key];
+  if ((state.vault.crates[key] || 0) <= 0) throw new Error(`${crate.label} is not ready yet`);
+  if (state.vault.keys < crate.keyCost) throw new Error(`Need ${crate.keyCost} Vault ${crate.keyCost === 1 ? 'Key' : 'Keys'}`);
+  state.vault.crates[key] -= 1;
+  state.vault.keys -= crate.keyCost;
+  addVaultProgress(crate.xp, false);
+  const reward = chooseVaultReward(key);
+  const duplicate = state.vault.inventory.includes(reward.id);
+  if (!duplicate) state.vault.inventory.push(reward.id);
+  if (duplicate) state.vault.keys += 1;
+  state.vault.lastReveal = { ...reward, duplicate, time: timeNow() };
+  state.vault.recentRewards.unshift(state.vault.lastReveal);
+  state.vault.recentRewards = state.vault.recentRewards.slice(0, 12);
+  addRewardClaim(crate.label, 0, crate.xp, `${reward.rarity} cosmetic: ${reward.name}`);
+  emitSoundHook('bonus-claim', { source: 'vault' });
+  saveState();
+  return state.vault.lastReveal;
+}
+
+export function equipCosmetic(idToEquip) {
+  const item = COSMETICS.find(cosmetic => cosmetic.id === idToEquip);
+  if (!item || !state.vault.inventory.includes(item.id)) throw new Error('Cosmetic is not unlocked');
+  state.cosmetics.equipped[item.type] = item.id;
+  saveState();
+  return item;
+}
+
+export function pushLiveActivity(item) {
+  const next = {
+    id: id(),
+    text: String(item?.text || 'A simulated table updated.').slice(0, 140),
+    tone: String(item?.tone || 'neutral').slice(0, 20),
+    game: String(item?.game || '').slice(0, 20),
+    time: timeNow()
+  };
+  state.liveCasino.activities.unshift(next);
+  state.liveCasino.activities = state.liveCasino.activities.slice(0, 10);
+  saveState();
+  return next;
+}
+
+export function updateLiveCasino(patch = {}) {
+  state.liveCasino = { ...state.liveCasino, ...patch, updatedAt: timeNow() };
+  if (Array.isArray(state.liveCasino.tableActivity)) state.liveCasino.tableActivity = state.liveCasino.tableActivity.slice(0, 6);
+  saveState();
+}
+
+export function rotateOnyxEvent(event, durationMinutes = 75) {
+  if (!event?.id) return state.tonightAtOnyx;
+  const current = state.tonightAtOnyx.activeEventId;
+  if (current && current !== event.id) {
+    state.tonightAtOnyx.history.unshift({ id: current, endedAt: timeNow() });
+    state.tonightAtOnyx.history = state.tonightAtOnyx.history.slice(0, 6);
+  }
+  state.tonightAtOnyx.activeEventId = event.id;
+  state.tonightAtOnyx.endsAt = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString();
+  state.tonightAtOnyx.xpMultiplier = Number(event.xpMultiplier || 1);
+  state.tonightAtOnyx.vaultMultiplier = Number(event.vaultMultiplier || 1);
+  state.tonightAtOnyx.rewardMultiplier = Number(event.rewardMultiplier || 1);
+  state.tonightAtOnyx.palette = String(event.palette || 'diamond');
+  saveState();
+  return state.tonightAtOnyx;
+}
+
+export function claimComebackBonus() {
+  const today = dateKey(new Date());
+  if (state.retention.comebackClaimedDate === today) throw new Error('Comeback reward already claimed today');
+  if (state.sessionProfit > -2000) throw new Error('Comeback reward is not active yet');
+  const amount = Math.min(1800, Math.max(500, Math.abs(state.sessionProfit) * 0.12));
+  state.retention.comebackClaimedDate = today;
+  state.balance += Math.floor(amount);
+  addVaultProgress(80, false);
+  state.transactions.unshift({ id: id(), game: 'Host', bet: 0, result: 'Comeback Reward', profit: Math.floor(amount), detail: 'Session recovery credits', time: timeNow() });
+  addRewardClaim('Comeback Host', Math.floor(amount), 0, 'Session recovery reward');
+  emitSoundHook('bonus-claim', { amount });
+  saveState();
+  return Math.floor(amount);
 }
 
 export function updateMissionProgress(id, amount) {
@@ -452,6 +630,26 @@ export function getTableLimit(game) {
   const bump = { Bronze: 1, Silver: 1.5, Gold: 2, Platinum: 3, Onyx: 5 }[getVipTier().name] || 1;
   return Math.floor((GAME_LIMITS[game] || 1000) * bump);
 }
+export function vaultXpNeeded() { return 500 + state.vault.level * 180; }
+export function getVaultProgress() {
+  const needed = vaultXpNeeded();
+  return { level: state.vault.level, xp: state.vault.xp, needed, percent: Math.max(0, Math.min(100, (state.vault.xp / needed) * 100)) };
+}
+export function getPrestigeTitle() {
+  if (getVipTier().name === 'Onyx' || state.vault.level >= 40) return 'Onyx Legend';
+  if (getVipTier().name === 'Platinum' || getVipTier().name === 'Gold') return 'VIP Elite';
+  if (state.vault.level >= 15) return 'Vault Hunter';
+  if (state.stats.biggestWin >= 5000) return 'High Roller';
+  return 'Rookie';
+}
+export function getCosmetic(idToFind) { return COSMETICS.find(item => item.id === idToFind); }
+export function getEquippedCosmetic(type) { return getCosmetic(state.cosmetics.equipped[type]); }
+export function getEventXpMultiplier() {
+  return Number(state.tonightAtOnyx?.xpMultiplier || 1);
+}
+export function getEventVaultMultiplier() {
+  return Number(state.tonightAtOnyx?.vaultMultiplier || 1);
+}
 export function getGameSession(game) { return ensureGameSession(game); }
 export function gameLabel(game) {
   return { slots: 'Onyx Slots', roulette: 'European Roulette', blackjack: 'Blackjack Classic', dice: 'Dice Duel', mines: 'Mines', crash: 'Crash', plinko: 'Plinko' }[game] || game;
@@ -465,6 +663,14 @@ export function formatProfit(n) {
   const value = Math.floor(Number(n) || 0);
   if (value === 0) return '0 credits';
   return `${value > 0 ? '+' : '-'}${Math.abs(value).toLocaleString()} credits`;
+}
+export function formatMultiplier(n, digits = 2) {
+  const value = Number(n);
+  return `${Number.isFinite(value) ? Math.max(0, value).toFixed(digits) : (0).toFixed(digits)}x`;
+}
+export function formatPercent(n, digits = 0) {
+  const value = Number(n);
+  return `${Number.isFinite(value) ? Math.max(0, Math.min(100, value)).toFixed(digits) : (0).toFixed(digits)}%`;
 }
 
 export function emitSoundHook(name, detail = {}) {
@@ -480,7 +686,7 @@ function ensureGameSession(game) {
 }
 function sanitizeState(nextState) {
   const incomingVersion = safeNumber(nextState.version, 1);
-  nextState.version = 5;
+  nextState.version = 1;
   nextState.balance = safeNumber(nextState.balance, 10000);
   nextState.level = Math.max(1, safeNumber(nextState.level, 1));
   nextState.xp = safeNumber(nextState.xp, 0);
@@ -490,14 +696,83 @@ function sanitizeState(nextState) {
   nextState.achievements = mergeDeep(defaultAchievements(), nextState.achievements || {});
   nextState.badges = Array.isArray(nextState.badges) ? nextState.badges : [];
   nextState.settings = mergeDeep(structuredClone(defaultState.settings), nextState.settings || {});
+  nextState.liveCasino = mergeDeep(defaultLiveCasino(), nextState.liveCasino || {});
+  nextState.tonightAtOnyx = mergeDeep(defaultTonightAtOnyx(), nextState.tonightAtOnyx || {});
+  nextState.vault = mergeDeep(defaultVault(), nextState.vault || {});
+  nextState.vault.inventory = Array.from(new Set(Array.isArray(nextState.vault.inventory) ? nextState.vault.inventory : defaultVault().inventory));
+  nextState.vault.recentRewards = Array.isArray(nextState.vault.recentRewards) ? nextState.vault.recentRewards.slice(0, 12) : [];
+  nextState.cosmetics = mergeDeep(defaultCosmetics(), nextState.cosmetics || {});
+  nextState.retention = mergeDeep(structuredClone(defaultState.retention), nextState.retention || {});
   nextState.promoCodes = nextState.promoCodes && typeof nextState.promoCodes === 'object' ? nextState.promoCodes : {};
-  nextState.rewardClaims = Array.isArray(nextState.rewardClaims) ? nextState.rewardClaims.slice(0, 30) : [];
+  nextState.stats = mergeDeep(structuredClone(defaultState.stats), nextState.stats || {});
+  nextState.missions = mergeDeep(structuredClone(defaultState.missions), nextState.missions || {});
+  nextState.transactions = sanitizeTransactions(nextState.transactions);
+  nextState.recentWins = sanitizeRecentWins(nextState.recentWins);
+  nextState.rewardClaims = sanitizeRewardClaims(nextState.rewardClaims);
   if (incomingVersion < 5 && nextState.balance >= 10000) nextState.starterBonusGranted = true;
   for (const game of PLAYABLE_GAMES) {
     nextState.selectedBets[game] = safeNumber(nextState.selectedBets[game], defaultState.selectedBets[game]);
     nextState.lastBets[game] = safeNumber(nextState.lastBets?.[game], nextState.selectedBets[game]);
   }
   return nextState;
+}
+function sanitizeTransactions(items) {
+  return Array.isArray(items) ? items.slice(0, 80).map(item => ({
+    id: String(item?.id || id()),
+    game: String(item?.game || 'Activity').slice(0, 40),
+    bet: safeNumber(item?.bet, 0),
+    result: String(item?.result || 'Result').slice(0, 80),
+    profit: safeNumber(item?.profit, 0),
+    detail: String(item?.detail || '').slice(0, 120),
+    time: String(item?.time || timeNow()).slice(0, 20)
+  })) : [];
+}
+function sanitizeRecentWins(items) {
+  return Array.isArray(items) ? items.slice(0, 12).map(item => ({
+    game: String(item?.game || 'Game').slice(0, 40),
+    amount: safeNumber(item?.amount, 0),
+    text: String(item?.text || 'Win').slice(0, 80),
+    time: String(item?.time || timeNow()).slice(0, 20)
+  })) : [];
+}
+function sanitizeRewardClaims(items) {
+  return Array.isArray(items) ? items.slice(0, 30).map(item => ({
+    source: String(item?.source || 'Reward').slice(0, 60),
+    credits: safeNumber(item?.credits, 0),
+    xp: safeNumber(item?.xp, 0),
+    detail: String(item?.detail || 'Reward claim').slice(0, 100),
+    time: String(item?.time || timeNow()).slice(0, 20)
+  })) : [];
+}
+function chooseVaultReward(crateType) {
+  const rarityRolls = {
+    daily: [['Common', 50], ['Rare', 30], ['Epic', 15], ['Legendary', 4], ['Onyx', 1]],
+    elite: [['Common', 20], ['Rare', 34], ['Epic', 28], ['Legendary', 14], ['Onyx', 4]],
+    mega: [['Common', 8], ['Rare', 22], ['Epic', 34], ['Legendary', 26], ['Onyx', 10]]
+  };
+  const targetRarity = weightedPick(rarityRolls[crateType] || rarityRolls.daily);
+  const candidates = COSMETICS.filter(item => item.rarity === targetRarity);
+  const missing = candidates.filter(item => !state.vault.inventory.includes(item.id));
+  return pick(missing.length ? missing : candidates) || COSMETICS[0];
+}
+function weightedPick(entries) {
+  const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
+  let roll = Math.random() * total;
+  for (const [value, weight] of entries) {
+    roll -= weight;
+    if (roll <= 0) return value;
+  }
+  return entries[0][0];
+}
+function pick(items) { return items[Math.floor(Math.random() * items.length)]; }
+function emitBigWinHook(game, profit, wager) {
+  if (profit < 1000 && profit < wager * 6) return;
+  const tier = profit >= 10000 || profit >= wager * 25 ? 'legendary'
+    : profit >= 5000 || profit >= wager * 12 ? 'massive'
+    : 'mega';
+  window.dispatchEvent(new CustomEvent('onyx:big-win', {
+    detail: { game: gameLabel(game), profit, tier }
+  }));
 }
 function safeNumber(value, fallback) {
   const number = Number(value);

@@ -1,10 +1,13 @@
 import {
   ACHIEVEMENTS,
   CHIP_VALUES,
+  COSMETICS,
   DAILY_REWARDS,
   PLAYABLE_GAMES,
   PROMO_CODES,
+  VAULT_CRATES,
   addToSelectedBet,
+  claimComebackBonus,
   claimDailyBonus,
   claimMission,
   claimPromoCode,
@@ -22,8 +25,10 @@ import {
   getNextDailyClaimText,
   getState,
   getTableLimit,
+  getVaultProgress,
   getVipProgress,
   getVipTier,
+  getPrestigeTitle,
   halfBet,
   importSave,
   maxSelectedBet,
@@ -37,6 +42,7 @@ import {
   xpNeeded
 } from './state.js';
 import { missions } from './missions.js';
+import { getActiveEvent, getEventCountdown } from './events.js';
 
 export const games = [
   { id: 'slots', title: 'Onyx Slots', category: ['featured', 'slots'], status: 'Playable', meta: '5 reels, premium symbols', accent: 'gold' },
@@ -91,8 +97,14 @@ const modalCopy = {
   paytable: {
     title: 'Onyx Slots Paytable',
     body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
+  },
+  'whats-new': {
+    title: 'Version 1: The Live Casino',
+    body: '<div class="release-list"><p><strong>The floor is alive:</strong> simulated online counts, live activity, hot games, and table chatter now move through the lobby.</p><p><strong>Tonight at Onyx:</strong> rotating casino events change ambience, featured games, XP, rewards, and Vault momentum.</p><p><strong>The Vault:</strong> earn Vault XP, keys, crates, cosmetics, prestige identity, and profile flex items through play.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
   }
 };
+
+let lastModalFocus = null;
 
 export function setView(viewName) {
   document.querySelectorAll('.view').forEach(view => view.classList.remove('is-visible'));
@@ -104,6 +116,10 @@ export function setView(viewName) {
 
 export function renderAll() {
   renderTopbar();
+  renderLiveCasino();
+  renderTonightAtOnyx();
+  renderVault();
+  renderRetentionPrompts();
   renderGameGrid(currentCategory());
   renderChipGroups();
   renderSessionPanels();
@@ -140,6 +156,115 @@ export function renderTopbar() {
   document.querySelector('#dailyBonusBtn').disabled = claimed;
 }
 
+export function renderLiveCasino() {
+  const state = getState();
+  text('#onlinePlayersText', `${state.liveCasino.onlinePlayers || 145} players online`);
+  text('#hotGameText', gameLabel(state.liveCasino.hotGame || getActiveEvent().featuredGame));
+  const ticker = document.querySelector('#liveTicker');
+  if (ticker) {
+    ticker.innerHTML = state.liveCasino.activities.length ? state.liveCasino.activities.map(item => `
+      <article class="live-ticker-item tone-${item.tone}">
+        <span>${item.time}</span><strong>${item.text}</strong>
+      </article>
+    `).join('') : '<p class="muted">Simulated casino activity will appear here.</p>';
+  }
+  const tables = document.querySelector('#tableActivityList');
+  if (tables) {
+    tables.innerHTML = (state.liveCasino.tableActivity || []).map(line => `<span>${line}</span>`).join('') || '<span>Tables are opening.</span>';
+  }
+}
+
+export function renderTonightAtOnyx() {
+  const event = getActiveEvent();
+  const state = getState();
+  const banner = document.querySelector('#tonightAtOnyx');
+  if (banner) {
+    banner.dataset.palette = event.palette;
+    banner.innerHTML = `
+      <div>
+        <p class="eyebrow">Tonight at Onyx</p>
+        <h2>${event.name}</h2>
+        <p>${event.description}</p>
+      </div>
+      <div class="event-metrics">
+        <span><strong>${getEventCountdown()}</strong><small>remaining</small></span>
+        <span><strong>${event.xpMultiplier.toFixed(2)}x</strong><small>XP</small></span>
+        <span><strong>${event.vaultMultiplier.toFixed(2)}x</strong><small>Vault XP</small></span>
+        <button class="secondary small" data-open-game="${event.featuredGame}">Play Hot Game</button>
+      </div>
+    `;
+  }
+  const history = document.querySelector('#eventHistoryList');
+  if (history) {
+    history.innerHTML = state.tonightAtOnyx.history.length
+      ? state.tonightAtOnyx.history.map(item => `<span>${item.id} ended ${item.endedAt}</span>`).join('')
+      : '<span>Event history starts tonight.</span>';
+  }
+}
+
+export function renderVault() {
+  const state = getState();
+  const progress = getVaultProgress();
+  text('#vaultLevelText', `Level ${progress.level}`);
+  text('#vaultXpText', `${progress.xp.toLocaleString()} / ${progress.needed.toLocaleString()} Vault XP`);
+  text('#vaultKeysText', `${state.vault.keys} ${state.vault.keys === 1 ? 'key' : 'keys'}`);
+  const bar = document.querySelector('#vaultBar');
+  if (bar) bar.style.width = `${progress.percent}%`;
+  const crates = document.querySelector('#vaultCrates');
+  if (crates) {
+    crates.innerHTML = Object.entries(VAULT_CRATES).map(([key, crate]) => `
+      <article class="vault-crate">
+        <span class="vault-crate-icon"></span>
+        <strong>${crate.label}</strong>
+        <small>${state.vault.crates[key] || 0} ready - ${crate.keyCost} ${crate.keyCost === 1 ? 'key' : 'keys'}</small>
+        <button class="secondary small" data-open-crate="${key}" ${(state.vault.crates[key] || 0) > 0 && state.vault.keys >= crate.keyCost ? '' : 'disabled'}>Open</button>
+      </article>
+    `).join('');
+  }
+  const inventory = document.querySelector('#vaultInventory');
+  if (inventory) {
+    inventory.innerHTML = state.vault.inventory.map(id => {
+      const item = COSMETICS.find(cosmetic => cosmetic.id === id);
+      const equipped = item && state.cosmetics.equipped[item.type] === item.id;
+      return item ? `
+        <article class="cosmetic-card rarity-${item.rarity.toLowerCase()} ${equipped ? 'is-equipped' : ''}">
+          <span>${item.rarity}</span>
+          <strong>${item.name}</strong>
+          <small>${item.type.replace(/([A-Z])/g, ' $1')}</small>
+          <button class="ghost small" data-equip-cosmetic="${item.id}" ${equipped ? 'disabled' : ''}>${equipped ? 'Equipped' : 'Equip'}</button>
+        </article>
+      ` : '';
+    }).join('');
+  }
+  const recent = document.querySelector('#vaultRecentRewards');
+  if (recent) {
+    recent.innerHTML = state.vault.recentRewards.length ? state.vault.recentRewards.map(item => `
+      <article class="log-item"><span>${item.time}</span><strong>${item.name}</strong><small>${item.rarity}</small><small>${item.type}</small><b>${item.duplicate ? '+1 key' : 'Unlocked'}</b></article>
+    `).join('') : '<p class="muted">Vault reveals will appear here.</p>';
+  }
+}
+
+export function renderRetentionPrompts() {
+  const state = getState();
+  const prompts = [];
+  const remainingMissions = missions.filter(mission => {
+    const stored = state.missions[mission.id] || {};
+    return !stored.claimed && (stored.progress || 0) < mission.target;
+  });
+  if (remainingMissions.length === 1) prompts.push('1 mission remaining for today.');
+  if (xpNeeded() - state.xp <= 120) prompts.push('VIP level almost reached.');
+  const vault = getVaultProgress();
+  if (vault.needed - vault.xp <= 120) prompts.push('Vault reward ready soon.');
+  if (state.dailyBonusDate === new Date().toISOString().slice(0, 10)) prompts.push('Daily streak continues tomorrow.');
+  if (state.sessionProfit <= -2000 && state.retention.comebackClaimedDate !== new Date().toISOString().slice(0, 10)) prompts.push('Comeback reward available.');
+  const node = document.querySelector('#retentionPrompts');
+  if (node) {
+    node.innerHTML = prompts.length ? prompts.slice(0, 3).map(prompt => `<span>${prompt}</span>`).join('') : '<span>The floor is steady. Play at your own pace.</span>';
+  }
+  const comeback = document.querySelector('#comebackRewardBtn');
+  if (comeback) comeback.disabled = !(state.sessionProfit <= -2000 && state.retention.comebackClaimedDate !== new Date().toISOString().slice(0, 10));
+}
+
 export function renderGameGrid(category = 'featured') {
   const grid = document.querySelector('#gameGrid');
   if (!grid) return;
@@ -153,7 +278,7 @@ export function renderGameGrid(category = 'featured') {
             <span class="game-icon">${gameIcon(game.id)}</span>
             <span class="status-pill">${game.status}</span>
           </div>
-          <h3>${game.title}</h3>
+          <h3>${game.title}${game.id === getActiveEvent().featuredGame ? ' <span class="hot-dot">Hot</span>' : ''}</h3>
           <p>${game.meta}</p>
           <button class="${playable ? 'secondary' : 'ghost'} small" ${playable ? '' : 'disabled'}>${playable ? 'Play' : 'Locked'}</button>
         </article>
@@ -283,6 +408,8 @@ export function renderProfile() {
   const stats = [
     ['Username', state.username],
     ['Current VIP', `${tier.name} (${tier.badge})`],
+    ['Prestige title', getPrestigeTitle()],
+    ['Vault level', getState().vault.level],
     ['Total games played', state.stats.totalGamesPlayed],
     ['Total wagered', formatCredits(state.stats.totalWagered)],
     ['Biggest win', formatCredits(state.stats.biggestWin)],
@@ -298,6 +425,18 @@ export function renderProfile() {
       <strong>${value}</strong>
     </article>
   `).join('');
+  const showcase = document.querySelector('#profileShowcase');
+  if (showcase) {
+    const equipped = Object.values(state.cosmetics.equipped).map(id => COSMETICS.find(item => item.id === id)).filter(Boolean);
+    showcase.innerHTML = `
+      <div class="profile-card-preview ${equipped.map(item => item.className).join(' ')}">
+        <span class="badge">${tier.badge}</span>
+        <h2>${state.username}</h2>
+        <p>${getPrestigeTitle()} - ${favoriteGame()}</p>
+      </div>
+      <div class="cosmetic-mini-list">${equipped.map(item => `<span>${item.name}</span>`).join('')}</div>
+    `;
+  }
 }
 
 export function renderRewardsPage() {
@@ -387,9 +526,11 @@ export function renderSettingsPage() {
   const reduced = document.querySelector('#reducedAnimationsToggle');
   const compact = document.querySelector('#compactModeToggle');
   const hide = document.querySelector('#hideWinnersToggle');
+  const sound = document.querySelector('#soundToggle');
   if (reduced) reduced.checked = !!state.settings.reducedAnimations;
   if (compact) compact.checked = !!state.settings.compactMode;
   if (hide) hide.checked = !!state.settings.hideRecentWins;
+  if (sound) sound.checked = state.settings.soundEnabled !== false;
 }
 
 export function initSharedUi() {
@@ -427,6 +568,9 @@ export function initSharedUi() {
   document.querySelector('#modalLayer')?.addEventListener('click', event => {
     if (event.target.id === 'modalLayer') closeModal();
   });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeModal();
+  });
   document.querySelector('#howItWorksBtn')?.addEventListener('click', () => openModal('rules-lobby'));
   document.querySelector('#saveUsernameBtn')?.addEventListener('click', () => {
     updateUsername(document.querySelector('#usernameInput').value);
@@ -454,12 +598,24 @@ export function initSharedUi() {
     }
     renderAll();
   });
+  document.querySelector('#comebackRewardBtn')?.addEventListener('click', () => {
+    try {
+      const amount = claimComebackBonus();
+      toast(`Comeback reward: +${formatCredits(amount)}`, 'win');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  window.addEventListener('onyx:event-tick', renderAll);
+  window.addEventListener('onyx:big-win', event => showBigWin(event.detail));
   document.querySelector('#settingsSaveBtn')?.addEventListener('click', () => {
     updateUsername(document.querySelector('#settingsUsernameInput').value);
     updateSettings({
       reducedAnimations: document.querySelector('#reducedAnimationsToggle').checked,
       compactMode: document.querySelector('#compactModeToggle').checked,
-      hideRecentWins: document.querySelector('#hideWinnersToggle').checked
+      hideRecentWins: document.querySelector('#hideWinnersToggle').checked,
+      soundEnabled: document.querySelector('#soundToggle')?.checked !== false
     });
     toast('Settings saved');
     renderAll();
@@ -531,17 +687,22 @@ export function disableDuring(button, disabled) {
 export function openModal(key) {
   const copy = modalCopy[key];
   if (!copy) return;
+  lastModalFocus = document.activeElement;
   text('#modalTitle', copy.title);
   document.querySelector('#modalBody').innerHTML = copy.body;
   const layer = document.querySelector('#modalLayer');
   layer.classList.add('is-visible');
   layer.setAttribute('aria-hidden', 'false');
+  document.querySelector('#modalCloseBtn')?.focus();
 }
 
 export function closeModal() {
   const layer = document.querySelector('#modalLayer');
+  if (!layer?.classList.contains('is-visible')) return;
   layer.classList.remove('is-visible');
   layer.setAttribute('aria-hidden', 'true');
+  if (lastModalFocus && typeof lastModalFocus.focus === 'function') lastModalFocus.focus();
+  lastModalFocus = null;
 }
 
 export function toast(message, tone = 'neutral') {
@@ -673,4 +834,15 @@ function applySettings() {
   const settings = getState().settings;
   document.body.classList.toggle('reduced-motion', !!settings.reducedAnimations);
   document.body.classList.toggle('compact-mode', !!settings.compactMode);
+}
+
+function showBigWin(detail) {
+  if (!detail || getState().settings.reducedAnimations) return;
+  const layer = document.querySelector('#bigWinLayer');
+  if (!layer) return;
+  layer.className = `big-win-layer is-visible tier-${detail.tier}`;
+  layer.querySelector('[data-big-win-tier]').textContent = `${detail.tier} win`;
+  layer.querySelector('[data-big-win-game]').textContent = detail.game;
+  layer.querySelector('[data-big-win-amount]').textContent = formatCredits(detail.profit);
+  setTimeout(() => layer.classList.remove('is-visible'), 2500);
 }
