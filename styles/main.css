@@ -103,7 +103,7 @@ p { line-height: 1.6; }
   bottom: 10px;
   z-index: 70;
   display: none;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 4px;
   padding: 6px;
   border: 1px solid var(--line);
@@ -245,7 +245,7 @@ p { line-height: 1.6; }
 
 .topbar {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr 0.8fr 1.1fr 0.9fr auto;
+  grid-template-columns: 1.25fr 1fr 1fr 0.8fr 1.1fr 0.9fr 1fr auto;
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -1552,12 +1552,126 @@ body.theme-vip .hero-panel { background: radial-gradient(circle at 82% 28%, rgba
   40% { filter: drop-shadow(0 0 24px rgba(245, 200, 106, 0.18)); }
 }
 
+.house-edge-lock, .ops-hero {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 16px;
+  background:
+    linear-gradient(135deg, rgba(5, 5, 7, 0.96), rgba(23, 12, 18, 0.88)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 1px, transparent 2px 6px);
+}
+.ops-door {
+  background:
+    linear-gradient(90deg, transparent 46%, rgba(105, 167, 255, 0.22) 48% 52%, transparent 54%),
+    radial-gradient(circle at 50% 18%, rgba(215, 51, 77, 0.2), transparent 28%),
+    linear-gradient(180deg, #101018, #050507);
+}
+.ops-hero {
+  grid-template-columns: 0.8fr 1.2fr;
+  border-color: rgba(105, 167, 255, 0.18);
+  box-shadow: var(--shadow), inset 0 0 40px rgba(105, 167, 255, 0.04);
+}
+.ops-grid, .cctv-grid, .lore-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.ops-card, .cctv-card, .lore-file, .ops-event {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(105, 167, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(105, 167, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    rgba(5, 7, 10, 0.78);
+}
+.ops-card.is-owned, .lore-file.is-unlocked {
+  border-color: rgba(245, 200, 106, 0.42);
+  box-shadow: 0 0 24px rgba(245, 200, 106, 0.08);
+}
+.ops-card p, .cctv-card p, .lore-file p, .ops-event p { color: var(--muted); }
+.ops-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+.ops-metrics span, .crowd-mix span {
+  display: block;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--muted);
+}
+.ops-metrics strong, .crowd-mix strong { display: block; color: var(--text); }
+.traffic-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.crowd-mix {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+  text-transform: capitalize;
+}
+.surveillance-panel {
+  margin: 16px 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(105, 167, 255, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(4, 8, 10, 0.9), rgba(5, 5, 7, 0.96));
+}
+.cctv-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cctv-card {
+  min-height: 210px;
+  border-color: rgba(66, 211, 138, 0.22);
+  background:
+    linear-gradient(180deg, rgba(66, 211, 138, 0.07), rgba(105, 167, 255, 0.025)),
+    #05090a;
+}
+.scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(66, 211, 138, 0.045) 8px 9px);
+  opacity: 0.7;
+}
+.surveillance-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.ops-event {
+  margin-bottom: 10px;
+  border-color: rgba(215, 51, 77, 0.34);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(215, 51, 77, 0.18), transparent 24%),
+    rgba(10, 6, 8, 0.86);
+}
+.edge-tool {
+  border-color: rgba(245, 200, 106, 0.18);
+}
+.lore-file {
+  border-style: dashed;
+  background:
+    linear-gradient(135deg, rgba(245, 200, 106, 0.055), rgba(215, 51, 77, 0.035)),
+    rgba(8, 8, 12, 0.78);
+}
+.lore-file.is-unlocked {
+  border-style: solid;
+}
+
 @media (max-width: 1180px) {
   .topbar, .game-grid, .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .topbar .ghost { grid-column: span 2; }
   .dashboard-grid, .game-layout, .roulette-layout, .profile-layout, .live-casino-grid, .live-floor-strip, .event-banner { grid-template-columns: 1fr; }
   .penthouse-hero, .high-roller-hero { grid-template-columns: 1fr; }
+  .house-edge-lock, .ops-hero { grid-template-columns: 1fr; }
   .asset-grid, .investment-grid, .high-table-grid, .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ops-grid, .cctv-grid, .lore-grid, .traffic-metrics, .crowd-mix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wide-panel { grid-column: auto; }
   .benefit-grid, .vip-hero, .settings-layout, .history-filters, .known-grid { grid-template-columns: 1fr; }
   .event-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1586,6 +1700,7 @@ body.theme-vip .hero-panel { background: radial-gradient(circle at 82% 28%, rgba
   .main, .sidebar { padding: 14px; }
   .topbar, .game-grid, .stats-grid, .risk-controls { grid-template-columns: 1fr; }
   .asset-grid, .investment-grid, .high-table-grid, .showcase-grid, .asset-metrics { grid-template-columns: 1fr; }
+  .ops-grid, .cctv-grid, .lore-grid, .ops-metrics, .traffic-metrics, .crowd-mix, .surveillance-actions { grid-template-columns: 1fr; }
   .investment-row { grid-template-columns: 1fr; }
   .high-roller-door { min-height: 180px; }
   .help-grid { grid-template-columns: 1fr; }

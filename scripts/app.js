@@ -19,6 +19,7 @@ import { initInvestments } from './investments.js';
 import { initHighRoller } from './highRoller.js';
 import { initPrestige } from './prestige.js';
 import { initAssetEconomy } from './assets.js';
+import { initHouseEdge } from './houseEdge.js';
 
 loadState();
 initSharedUi();
@@ -34,6 +35,7 @@ initPenthouse();
 initInvestments();
 initHighRoller();
 initPrestige();
+initHouseEdge();
 initNavigation();
 initSlots();
 initRoulette();

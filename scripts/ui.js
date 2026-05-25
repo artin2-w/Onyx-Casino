@@ -7,11 +7,19 @@ import {
   PROMO_CODES,
   INVESTMENT_OPTIONS,
   LUXURY_ASSETS,
+  EDGE_TOOLS,
+  LORE_FILES,
+  OPERATIONS_EVENTS,
+  STAFF_CANDIDATES,
+  SURVEILLANCE_INCIDENTS,
+  TABLE_LICENSES,
   VAULT_CRATES,
   addToSelectedBet,
   buyLuxuryAsset,
+  buyTableLicense,
   claimComebackBonus,
   claimDailyBonus,
+  collectHouseIncome,
   claimPenthouseIncome,
   claimMission,
   claimPromoCode,
@@ -23,12 +31,17 @@ import {
   equipLuxuryAsset,
   exportSave,
   favoriteGame,
+  fireStaff,
   formatCredits,
   formatMultiplier,
   formatPercent,
   formatProfit,
   gameLabel,
   getDailyRewardForStreak,
+  getHouseEdgeAccess,
+  getHouseEdgeSummary,
+  getHouseIncomeReady,
+  getHouseIncomeRate,
   getHighRollerAccess,
   getGameSession,
   getLifestyleLevel,
@@ -40,6 +53,12 @@ import {
   getPassiveIncomeReady,
   getPrestigeStatus,
   getPrestigeValue,
+  getManagementRank,
+  getOperationsEvent,
+  getStaffCandidate,
+  getSurveillanceIncident,
+  getTableLicense,
+  getTableUpgradeCost,
   getState,
   getTableLimit,
   getVaultProgress,
@@ -52,11 +71,24 @@ import {
   repeatBet,
   replayOnboarding,
   resetGameSession,
+  repairHouseTable,
+  resolveOperationsEvent,
+  resolveSurveillanceAlert,
   sellLuxuryAsset,
   setSelectedBet,
+  assignStaff,
+  generateOperationsEvent,
+  hireStaff,
+  payStaffSalary,
+  seedSurveillanceAlert,
   startInvestment,
+  trainStaff,
   tierRewardMultiplier,
   toggleWishlistAsset,
+  unlockEdgeTool,
+  unlockLoreFile,
+  upgradeHouseTable,
+  useEdgeTool,
   updateSettings,
   updateUsername,
   xpNeeded
@@ -119,8 +151,8 @@ const modalCopy = {
     body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
   },
   'whats-new': {
-    title: 'Version 2: Luxury & Power',
-    body: '<div class="release-list"><p><strong>The Onyx Penthouse:</strong> buy fictional luxury assets, grow net worth, equip a showcase, and collect browser-local passive income.</p><p><strong>Vault Investments:</strong> lock virtual credits into local Credit Bonds with maturity timers, projected returns, and simulated risk tiers.</p><p><strong>High Roller World:</strong> status-gated premium table variants reuse the existing games with richer labels and progression boosts.</p><p><strong>Prestige economy:</strong> lifestyle level, net worth rank, High Roller score, Onyx Notes, market trends, and rare listings give credits long-term meaning.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
+    title: 'Version 3: The House Edge',
+    body: '<div class="release-list"><p><strong>House Edge Hub:</strong> unlock a fictional operations dashboard with table licenses, staff, NPC traffic, reputation, and security risk.</p><p><strong>Surveillance Hub:</strong> review simulated incidents and choose game-like responses for reputation, Vault XP, and Onyx Notes.</p><p><strong>Edge Tools:</strong> unlock simulator-only probability hints that never guarantee wins or teach real-world advantage play.</p><p><strong>Onyx Lore:</strong> discover subtle Founder files, Black Card records, and backroom rumors as your operations rank grows.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
   }
 };
 
@@ -142,6 +174,7 @@ export function renderAll() {
   renderPenthouse();
   renderInvestments();
   renderHighRoller();
+  renderHouseEdge();
   renderRetentionPrompts();
   renderGameGrid(currentCategory());
   renderChipGroups();
@@ -180,6 +213,7 @@ export function renderTopbar() {
   text('#netWorthText', formatCredits(getNetWorth()));
   text('#onyxNotesText', `${state.onyxNotes.balance.toLocaleString()} notes`);
   text('#prestigeHeaderText', getPrestigeStatus().title);
+  text('#managementRankText', getManagementRank().title);
 }
 
 export function renderLiveCasino() {
@@ -410,6 +444,225 @@ export function renderHighRoller() {
   }
 }
 
+export function renderHouseEdge() {
+  const state = getState();
+  const summary = getHouseEdgeSummary();
+  const access = summary.access;
+  const locked = document.querySelector('#houseEdgeLocked');
+  const unlocked = document.querySelector('#houseEdgeUnlocked');
+  if (locked) locked.hidden = access.unlocked;
+  if (unlocked) unlocked.hidden = !access.unlocked;
+  text('#houseEdgeAccessText', access.unlocked ? 'Operations access active' : 'Operations access locked');
+  const progress = document.querySelector('#houseEdgeProgress');
+  if (progress) {
+    progress.innerHTML = [
+      ['Lifestyle Level 5', access.lifestyle >= 5, `Current ${access.lifestyle}`],
+      ['Own Onyx House Shares', access.ownsShares, access.ownsShares ? 'Owned' : 'Not owned'],
+      ['VIP Gold or higher', access.vipOk, getVipTier().name]
+    ].map(([label, done, detail]) => `<article class="${done ? 'is-done' : ''}"><span>${done ? 'Unlocked' : 'Locked'}</span><strong>${label}</strong><small>${detail}</small></article>`).join('');
+  }
+  text('#houseRankText', summary.rank.title);
+  text('#houseScoreText', summary.rank.score.toLocaleString());
+  text('#houseReputationText', `${state.houseEdge.reputation}/100`);
+  text('#houseIncomeText', `${formatCredits(summary.incomeRate)} / hour`);
+  text('#houseIncomeReadyText', formatCredits(summary.incomeReady));
+  text('#houseTrafficText', state.houseEdge.npcTraffic.mood);
+  text('#houseRiskText', `${state.houseEdge.securityRisk}/100`);
+  text('#houseMoraleText', `${state.houseEdge.staffMorale}/100`);
+  text('#houseHeatText', `${Math.max(summary.averagePopularity, state.houseEdge.tableHeat)}/100`);
+  const collect = document.querySelector('#collectHouseIncomeBtn');
+  if (collect) collect.disabled = summary.incomeReady <= 0;
+
+  const tables = document.querySelector('#tableLicenseList');
+  if (tables) {
+    tables.innerHTML = TABLE_LICENSES.map(license => {
+      const owned = state.houseEdge.ownedTables.find(table => table.licenseId === license.id);
+      return `
+        <article class="ops-card table-license ${owned ? 'is-owned' : ''}">
+          <span class="label">${license.staffRequired}</span>
+          <h3>${license.name}</h3>
+          <p>Income ${formatCredits(license.baseIncome)} / hour - risk ${license.risk}/100 - popularity ${license.popularity}/100</p>
+          <button class="${owned ? 'ghost' : 'primary'} small" data-buy-table="${license.id}" ${owned ? 'disabled' : ''}>${owned ? 'Owned' : `Buy ${formatCredits(license.cost)}`}</button>
+        </article>
+      `;
+    }).join('');
+  }
+
+  const ownedTables = document.querySelector('#ownedTablesList');
+  if (ownedTables) {
+    ownedTables.innerHTML = state.houseEdge.ownedTables.length ? state.houseEdge.ownedTables.map(table => {
+      const license = getTableLicense(table.licenseId);
+      const staff = state.houseEdge.staffRoster.find(member => member.id === table.assignedStaffId);
+      return `
+        <article class="ops-card owned-table">
+          <div class="section-head compact"><div><p class="eyebrow">Level ${table.level}</p><h3>${license?.name || 'Table'}</h3></div><span class="pill">${staff?.name || 'No staff'}</span></div>
+          <div class="ops-metrics">
+            <span>Condition <strong>${table.condition}/100</strong></span>
+            <span>Popularity <strong>${table.popularity}/100</strong></span>
+            <span>Heat <strong>${table.heat}/100</strong></span>
+          </div>
+          <label>Assign staff
+            <select data-assign-staff="${table.id}">
+              <option value="">No assignment</option>
+              ${state.houseEdge.staffRoster.map(member => `<option value="${member.id}" ${member.id === table.assignedStaffId ? 'selected' : ''}>${member.name} - ${member.role}</option>`).join('')}
+            </select>
+          </label>
+          <div class="game-actions">
+            <button class="secondary small" data-upgrade-table="${table.id}">Upgrade ${formatCredits(getTableUpgradeCost(table))}</button>
+            <button class="ghost small" data-repair-table="${table.id}">Maintain</button>
+          </div>
+        </article>
+      `;
+    }).join('') : '<p class="muted">No table licenses owned yet.</p>';
+  }
+
+  const staffMarket = document.querySelector('#staffMarketList');
+  if (staffMarket) {
+    staffMarket.innerHTML = STAFF_CANDIDATES.map(candidate => {
+      const hired = state.houseEdge.staffRoster.some(staff => staff.candidateId === candidate.id);
+      return `
+        <article class="ops-card staff-card ${hired ? 'is-owned' : ''}">
+          <span class="label">${candidate.role}</span>
+          <h3>${candidate.name}</h3>
+          <p>${candidate.trait} - ${candidate.bonus}</p>
+          <div class="ops-metrics"><span>Skill <strong>${candidate.skill}</strong></span><span>Salary <strong>${formatCredits(candidate.salary)}</strong></span><span>Morale <strong>${candidate.morale}</strong></span></div>
+          <button class="secondary small" data-hire-staff="${candidate.id}" ${hired ? 'disabled' : ''}>${hired ? 'Hired' : `Hire ${formatCredits(candidate.salary * 2)}`}</button>
+        </article>
+      `;
+    }).join('');
+  }
+
+  const roster = document.querySelector('#staffRosterList');
+  if (roster) {
+    roster.innerHTML = state.houseEdge.staffRoster.length ? state.houseEdge.staffRoster.map(staff => `
+      <article class="ops-card staff-card">
+        <span class="label">${staff.role}</span>
+        <h3>${staff.name}</h3>
+        <p>${staff.trait} - ${staff.bonus}</p>
+        <div class="ops-metrics"><span>Skill <strong>${staff.skill}</strong></span><span>Morale <strong>${staff.morale}</strong></span><span>Salary <strong>${formatCredits(staff.salary)}</strong></span></div>
+        <div class="game-actions"><button class="secondary small" data-train-staff="${staff.id}">Train</button><button class="ghost small" data-fire-staff="${staff.id}">Release</button></div>
+      </article>
+    `).join('') : '<p class="muted">No staff hired yet.</p>';
+  }
+
+  const traffic = document.querySelector('#npcTrafficPanel');
+  if (traffic) {
+    const mix = state.houseEdge.npcTraffic.mix;
+    traffic.innerHTML = `
+      <div class="ops-metrics traffic-metrics">
+        <span>Crowd mood <strong>${state.houseEdge.npcTraffic.mood}</strong></span>
+        <span>Spending pressure <strong>${state.houseEdge.npcTraffic.spendingPressure}/100</strong></span>
+        <span>Table demand <strong>${state.houseEdge.npcTraffic.tableDemand}/100</strong></span>
+        <span>VIP presence <strong>${state.houseEdge.npcTraffic.vipPresence}/100</strong></span>
+      </div>
+      <div class="crowd-mix">${Object.entries(mix).map(([key, value]) => `<span>${key.replace(/([A-Z])/g, ' $1')} <strong>${value}%</strong></span>`).join('')}</div>
+    `;
+  }
+
+  renderSurveillance();
+  renderEdgeTools();
+  renderOperationsEvent();
+  renderLoreFiles();
+  const log = document.querySelector('#operationsLogList');
+  if (log) {
+    log.innerHTML = state.houseEdge.operationsLog.length ? state.houseEdge.operationsLog.map(item => `
+      <article class="log-item"><span>${item.time}</span><strong>${item.result}</strong><small>${item.detail}</small><b class="${item.profit > 0 ? 'win' : item.profit < 0 ? 'lose' : ''}">${formatProfit(item.profit)}</b></article>
+    `).join('') : '<p class="muted">Operations log entries will appear here.</p>';
+  }
+}
+
+function renderSurveillance() {
+  const state = getState();
+  const alerts = document.querySelector('#surveillanceAlertsList');
+  if (alerts) {
+    alerts.innerHTML = state.houseEdge.surveillanceAlerts.length ? state.houseEdge.surveillanceAlerts.map(alert => {
+      const incident = getSurveillanceIncident(alert.incidentId);
+      return `
+        <article class="cctv-card alert-card">
+          <span class="scanline"></span>
+          <p class="eyebrow">${incident?.table || 'Control Room'}</p>
+          <h3>${incident?.title || 'Surveillance alert'}</h3>
+          <p>${incident?.detail || 'A simulated operations alert is awaiting review.'}</p>
+          <div class="surveillance-actions">
+            ${['observe', 'warn', 'ignore', 'escort', 'compensate', 'technician', 'analyst'].map(action => `<button class="ghost small" data-resolve-alert="${alert.id}" data-alert-action="${action}">${actionLabelForUi(action)}</button>`).join('')}
+          </div>
+        </article>
+      `;
+    }).join('') : '<p class="muted">No open surveillance alerts. Generate a sweep to scan the fictional floor.</p>';
+  }
+}
+
+function renderEdgeTools() {
+  const state = getState();
+  const tools = document.querySelector('#edgeToolsList');
+  if (tools) {
+    tools.innerHTML = EDGE_TOOLS.map(tool => {
+      const unlocked = !!state.houseEdge.edgeTools[tool.id];
+      return `
+        <article class="ops-card edge-tool ${unlocked ? 'is-owned' : ''}">
+          <span class="label">${tool.game}</span>
+          <h3>${tool.name}</h3>
+          <p>${tool.hint}</p>
+          <div class="game-actions">
+            <button class="secondary small" data-unlock-tool="${tool.id}" ${unlocked ? 'disabled' : ''}>${unlocked ? 'Unlocked' : `Unlock ${tool.cost} notes`}</button>
+            <button class="ghost small" data-use-tool="${tool.id}" ${unlocked ? '' : 'disabled'}>Run Tool</button>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+  const reports = document.querySelector('#edgeToolReports');
+  if (reports) {
+    reports.innerHTML = state.houseEdge.toolReports.length ? state.houseEdge.toolReports.map(report => {
+      const tool = EDGE_TOOLS.find(item => item.id === report.toolId);
+      return `<article class="log-item"><span>${report.time}</span><strong>${tool?.name || 'Edge Tool'}</strong><small>${report.text}</small><b>Hint</b></article>`;
+    }).join('') : '<p class="muted">Simulator tool reports will appear here.</p>';
+  }
+}
+
+function renderOperationsEvent() {
+  const state = getState();
+  const panel = document.querySelector('#operationsEventPanel');
+  if (panel) {
+    if (!state.houseEdge.activeEvent) {
+      panel.innerHTML = '<p class="muted">No active operations event. Start a floor check to create a management choice.</p><button class="secondary small" id="generateOperationsEventBtn">Start Floor Check</button>';
+    } else {
+      const event = getOperationsEvent(state.houseEdge.activeEvent.eventId);
+      panel.innerHTML = `
+        <article class="ops-event tone-${event?.tone || 'alert'}">
+          <p class="eyebrow">Operations Event</p>
+          <h3>${event?.title || 'Floor event'}</h3>
+          <p>Choose a fictional management response. Results affect only the local simulator.</p>
+          <div class="game-actions">${(event?.choices || []).map(choice => `<button class="secondary small" data-resolve-event="${choice}">${choiceLabelForUi(choice)}</button>`).join('')}</div>
+        </article>
+      `;
+    }
+  }
+  const history = document.querySelector('#operationsEventHistory');
+  if (history) {
+    history.innerHTML = state.houseEdge.eventHistory.length ? state.houseEdge.eventHistory.map(item => `
+      <article class="log-item"><span>${item.time}</span><strong>${item.event}</strong><small>${choiceLabelForUi(item.choice)}</small><b class="win">+${formatCredits(item.income)}</b></article>
+    `).join('') : '<p class="muted">Operations event history will appear here.</p>';
+  }
+}
+
+function renderLoreFiles() {
+  const state = getState();
+  const files = document.querySelector('#loreFilesList');
+  if (!files) return;
+  files.innerHTML = LORE_FILES.map(file => {
+    const unlocked = state.houseEdge.loreUnlocked.includes(file.id);
+    return `
+      <article class="lore-file ${unlocked ? 'is-unlocked' : ''}">
+        <span class="label">${unlocked ? 'Unlocked file' : file.unlock}</span>
+        <h3>${file.title}</h3>
+        <p>${unlocked ? file.body : 'Classified operations record. Keep building House Edge status to unlock.'}</p>
+        ${unlocked ? '' : `<button class="ghost small" data-unlock-lore="${file.id}">Check Unlock</button>`}
+      </article>
+    `;
+  }).join('');
+}
+
 export function renderRetentionPrompts() {
   const state = getState();
   const prompts = [];
@@ -432,6 +685,8 @@ export function renderRetentionPrompts() {
   if (!getHighRollerAccess().access && getHighRollerAccess().score >= 1500) prompts.push('High Roller access is getting close.');
   if (getPassiveIncomeReady() > 0) prompts.push('Penthouse income is ready.');
   if (state.luxuryMarket.rareAssetId) prompts.push('Rare luxury listing appeared.');
+  if (getHouseEdgeAccess().unlocked && getHouseIncomeReady() > 0) prompts.push('House income is ready.');
+  if (!getHouseEdgeAccess().unlocked && getHouseEdgeAccess().lifestyle >= 4) prompts.push('House Edge access is nearly unlocked.');
   const node = document.querySelector('#retentionPrompts');
   if (node) {
     node.innerHTML = prompts.length ? prompts.slice(0, 3).map(prompt => `<span>${prompt}</span>`).join('') : '<span>The floor is steady. Play at your own pace.</span>';
@@ -584,6 +839,7 @@ export function renderProfile() {
     ['Username', state.username],
     ['Current VIP', `${tier.name} (${tier.badge})`],
     ['Prestige title', getPrestigeTitle()],
+    ['Management rank', getManagementRank().title],
     ['Net worth rank', getPrestigeStatus().rank],
     ['Net worth', formatCredits(getNetWorth())],
     ['Lifestyle level', getLifestyleLevel()],
@@ -819,6 +1075,150 @@ export function initSharedUi() {
         toast(error.message, 'warning');
       }
       renderAll();
+      return;
+    }
+
+    const buyTable = event.target.closest('[data-buy-table]');
+    if (buyTable) {
+      try {
+        const table = buyTableLicense(buyTable.dataset.buyTable);
+        toast(`${table.name} license purchased`, 'win');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const upgradeTable = event.target.closest('[data-upgrade-table]');
+    if (upgradeTable) {
+      try {
+        upgradeHouseTable(upgradeTable.dataset.upgradeTable);
+        toast('Table upgraded', 'win');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const repairTable = event.target.closest('[data-repair-table]');
+    if (repairTable) {
+      try {
+        repairHouseTable(repairTable.dataset.repairTable);
+        toast('Table maintenance complete');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const hire = event.target.closest('[data-hire-staff]');
+    if (hire) {
+      try {
+        const staff = hireStaff(hire.dataset.hireStaff);
+        toast(`${staff.name} hired`);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const train = event.target.closest('[data-train-staff]');
+    if (train) {
+      try {
+        trainStaff(train.dataset.trainStaff);
+        toast('Staff training complete');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const fire = event.target.closest('[data-fire-staff]');
+    if (fire) {
+      if (!confirm('Release this fictional staff member from the roster?')) return;
+      try {
+        fireStaff(fire.dataset.fireStaff);
+        toast('Staff roster updated');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const resolveAlert = event.target.closest('[data-resolve-alert]');
+    if (resolveAlert) {
+      try {
+        const result = resolveSurveillanceAlert(resolveAlert.dataset.resolveAlert, resolveAlert.dataset.alertAction);
+        toast(`${result.incident.title}: ${result.good ? 'strong call' : 'closed'}`, result.good ? 'win' : 'warning');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const unlockTool = event.target.closest('[data-unlock-tool]');
+    if (unlockTool) {
+      try {
+        const tool = unlockEdgeTool(unlockTool.dataset.unlockTool);
+        toast(`${tool.name} unlocked`);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const useTool = event.target.closest('[data-use-tool]');
+    if (useTool) {
+      try {
+        const report = useEdgeTool(useTool.dataset.useTool);
+        toast(report.text);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const resolveEvent = event.target.closest('[data-resolve-event]');
+    if (resolveEvent) {
+      try {
+        const result = resolveOperationsEvent(resolveEvent.dataset.resolveEvent);
+        toast(`${result.event.title}: +${formatCredits(result.income)}`, 'win');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    if (event.target.closest('#generateOperationsEventBtn')) {
+      try {
+        generateOperationsEvent();
+        toast('Operations event ready');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const unlockLore = event.target.closest('[data-unlock-lore]');
+    if (unlockLore) {
+      try {
+        const file = unlockLoreFile(unlockLore.dataset.unlockLore);
+        toast(`${file.title} checked`);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
     }
   });
 
@@ -834,6 +1234,44 @@ export function initSharedUi() {
   document.querySelector('#assetCategoryFilter')?.addEventListener('change', renderPenthouse);
   document.querySelector('#assetRarityFilter')?.addEventListener('change', renderPenthouse);
   document.querySelector('#investmentAmountInput')?.addEventListener('input', renderInvestments);
+  document.querySelector('#collectHouseIncomeBtn')?.addEventListener('click', () => {
+    try {
+      const amount = collectHouseIncome();
+      toast(`House income collected: +${formatCredits(amount)}`, 'win');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#payStaffBtn')?.addEventListener('click', () => {
+    try {
+      const amount = payStaffSalary();
+      toast(`Staff paid: ${formatCredits(amount)}`);
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#scanFloorBtn')?.addEventListener('click', () => {
+    try {
+      seedSurveillanceAlert();
+      toast('Surveillance sweep complete');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.body.addEventListener('change', event => {
+    const assign = event.target.closest('[data-assign-staff]');
+    if (!assign || !assign.value) return;
+    try {
+      assignStaff(assign.dataset.assignStaff, assign.value);
+      toast('Staff assignment updated');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
 
   document.querySelector('#modalCloseBtn')?.addEventListener('click', closeModal);
   document.querySelector('#modalLayer')?.addEventListener('click', event => {
@@ -1075,6 +1513,23 @@ function timeUntil(dateText) {
   const hours = Math.ceil(minutes / 60);
   if (hours < 24) return `${hours}h remaining`;
   return `${Math.ceil(hours / 24)}d remaining`;
+}
+
+function actionLabelForUi(action) {
+  return {
+    observe: 'Observe',
+    warn: 'Warn',
+    ignore: 'Ignore',
+    escort: 'Escort Out',
+    compensate: 'Compensate VIP',
+    technician: 'Call Technician',
+    analyst: 'Assign Analyst',
+    manager: 'Assign Manager'
+  }[action] || choiceLabelForUi(action);
+}
+
+function choiceLabelForUi(choice) {
+  return String(choice || '').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
 function text(selector, value) {

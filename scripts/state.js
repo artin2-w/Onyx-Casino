@@ -1,5 +1,5 @@
-const SAVE_KEY = 'onyxCasinoSaveV2';
-const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV1', 'onyxCasinoSaveV6', 'onyxCasinoSaveV5', 'onyxCasinoSaveV4', 'onyxCasinoSaveV3', 'onyxCasinoSaveV2'];
+const SAVE_KEY = 'onyxCasinoSaveV3';
+const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV2', 'onyxCasinoSaveV1', 'onyxCasinoSaveV6', 'onyxCasinoSaveV5', 'onyxCasinoSaveV4', 'onyxCasinoSaveV3'];
 
 export const PLAYABLE_GAMES = ['slots', 'roulette', 'blackjack', 'dice', 'mines', 'crash', 'plinko'];
 export const CHIP_VALUES = [10, 25, 50, 100, 250, 500, 1000];
@@ -91,6 +91,92 @@ export const INVESTMENT_OPTIONS = {
 
 export const MARKET_STATES = ['Stable', 'Rising', 'Cooling', 'Rare Demand', 'VIP Frenzy'];
 
+export const TABLE_LICENSES = [
+  { id: 'blackjack-table', name: 'Blackjack Table', cost: 28000, baseIncome: 180, staffRequired: 'Dealer', risk: 8, popularity: 62, reputation: 3 },
+  { id: 'roulette-table', name: 'Roulette Table', cost: 36000, baseIncome: 230, staffRequired: 'Dealer', risk: 10, popularity: 68, reputation: 4 },
+  { id: 'slots-terminal', name: 'Slots Terminal', cost: 22000, baseIncome: 150, staffRequired: 'Technician', risk: 6, popularity: 72, reputation: 2 },
+  { id: 'crash-terminal', name: 'Crash Terminal', cost: 42000, baseIncome: 310, staffRequired: 'Floor Manager', risk: 14, popularity: 76, reputation: 5 },
+  { id: 'plinko-board', name: 'Plinko Board', cost: 30000, baseIncome: 205, staffRequired: 'Technician', risk: 7, popularity: 64, reputation: 3 },
+  { id: 'mines-room', name: 'Mines Room', cost: 48000, baseIncome: 340, staffRequired: 'Security Analyst', risk: 16, popularity: 58, reputation: 5 },
+  { id: 'dice-lounge', name: 'Dice Lounge', cost: 26000, baseIncome: 170, staffRequired: 'VIP Host', risk: 9, popularity: 60, reputation: 3 }
+];
+
+export const STAFF_CANDIDATES = [
+  { id: 'mara-vale', name: 'Mara Vale', role: 'Dealer', skill: 62, salary: 420, morale: 78, trait: 'Calm Under Pressure', bonus: 'Stabilizes table heat', riskModifier: -2 },
+  { id: 'dax-riven', name: 'Dax Riven', role: 'Dealer', skill: 54, salary: 360, morale: 72, trait: 'Crowd Favorite', bonus: 'Improves NPC mood', riskModifier: 0 },
+  { id: 'selene-cross', name: 'Selene Cross', role: 'Floor Manager', skill: 68, salary: 620, morale: 74, trait: 'Night Shift Expert', bonus: 'Boosts late-floor traffic', riskModifier: -1 },
+  { id: 'oren-glass', name: 'Oren Glass', role: 'Security Analyst', skill: 71, salary: 700, morale: 80, trait: 'Sharp Eyes', bonus: 'Improves incident outcomes', riskModifier: -5 },
+  { id: 'ivy-nocturne', name: 'Ivy Nocturne', role: 'VIP Host', skill: 66, salary: 660, morale: 76, trait: 'Lucky Presence', bonus: 'Improves high roller traffic', riskModifier: 1 },
+  { id: 'keir-fuse', name: 'Keir Fuse', role: 'Technician', skill: 59, salary: 470, morale: 70, trait: 'High Maintenance', bonus: 'Repairs table condition faster', riskModifier: -3 }
+];
+
+export const SURVEILLANCE_INCIDENTS = [
+  { id: 'card-counter', title: 'Possible card counter', table: 'Blackjack Table', severity: 16, bestAction: 'observe', detail: 'A pattern-focused guest is drawing attention in the simulator.' },
+  { id: 'roulette-pattern', title: 'Suspicious roulette pattern', table: 'Roulette Table', severity: 12, bestAction: 'warn', detail: 'The wheel log shows unusual repeat attention from one simulated player.' },
+  { id: 'vip-dispute', title: 'VIP dispute', table: 'High Roller Floor', severity: 14, bestAction: 'compensate', detail: 'A fictional VIP guest is unhappy with table pacing.' },
+  { id: 'table-malfunction', title: 'Table malfunction', table: 'Slots Terminal', severity: 10, bestAction: 'technician', detail: 'A terminal needs a maintenance check before traffic drops.' },
+  { id: 'dealer-fatigue', title: 'Dealer fatigue', table: 'Blackjack Table', severity: 8, bestAction: 'observe', detail: 'A staff member needs rotation before morale slips.' },
+  { id: 'chip-irregularity', title: 'Chip irregularity', table: 'Dice Lounge', severity: 18, bestAction: 'analyst', detail: 'A simulated chip mismatch appeared in the backroom ledger.' },
+  { id: 'streamer-surge', title: 'Streamer crowd surge', table: 'Crash Terminal', severity: 9, bestAction: 'manager', detail: 'A simulated stream drew extra guests to a volatile table.' },
+  { id: 'vault-anomaly', title: 'Vault door anomaly', table: 'Vault Hall', severity: 20, bestAction: 'analyst', detail: 'A sensor flicker was recorded near the decorative Vault doors.' }
+];
+
+export const EDGE_TOOLS = [
+  { id: 'blackjack-lens', name: 'Blackjack Probability Lens', cost: 3, game: 'Blackjack', hint: 'Estimates broad shoe texture. It never guarantees a hand outcome.' },
+  { id: 'crash-analyzer', name: 'Crash Range Analyzer', cost: 4, game: 'Crash', hint: 'Shows low, medium, or high simulator volatility mood.' },
+  { id: 'roulette-map', name: 'Roulette Heat Map', cost: 3, game: 'Roulette', hint: 'Visualizes recent-number clusters without predicting future numbers.' },
+  { id: 'mines-scanner', name: 'Mines Risk Scanner', cost: 5, game: 'Mines', hint: 'Reports a risk mood. It never reveals mine positions.' },
+  { id: 'plinko-meter', name: 'Plinko Volatility Meter', cost: 3, game: 'Plinko', hint: 'Explains selected row/risk volatility in simulator terms.' }
+];
+
+export const OPERATIONS_EVENTS = [
+  { id: 'vip-whale-arrived', title: 'VIP Whale Arrived', tone: 'vip', choices: ['private-table', 'luxury-comp', 'assign-host'] },
+  { id: 'dealer-burnout', title: 'Dealer Burnout', tone: 'staff', choices: ['rotate-staff', 'train-team', 'ignore'] },
+  { id: 'table-heat-spike', title: 'Table Heat Spike', tone: 'heat', choices: ['cool-table', 'boost-security', 'ride-wave'] },
+  { id: 'security-alert', title: 'Security Alert', tone: 'alert', choices: ['observe', 'assign-analyst', 'warn-floor'] },
+  { id: 'lucky-crowd-night', title: 'Lucky Crowd Night', tone: 'crowd', choices: ['extend-hours', 'vip-host', 'bank-income'] },
+  { id: 'maintenance-needed', title: 'Maintenance Needed', tone: 'service', choices: ['call-technician', 'delay', 'premium-service'] },
+  { id: 'influencer-visit', title: 'Influencer Visit', tone: 'crowd', choices: ['stage-moment', 'quiet-room', 'ignore'] },
+  { id: 'vault-audit', title: 'Vault Audit', tone: 'vault', choices: ['review-log', 'assign-analyst', 'founder-file'] }
+];
+
+export const LORE_FILES = [
+  { id: 'founder-brief', title: 'Founder Brief: First Stone', unlock: 'House Edge unlock', body: 'A clipped executive memo references The Founder and the first onyx stone placed under the lobby floor.' },
+  { id: 'black-card-record', title: 'Black Card Record 07', unlock: 'Management rank: Table Owner', body: 'A silent Black Card guest appears in old logs under several different names.' },
+  { id: 'vault-echo', title: 'Vault Echo Log', unlock: 'Vault level 5', body: 'A Vault camera caught a gold reflection even while the room was empty.' },
+  { id: 'syndicate-rumor', title: 'Onyx Syndicate Rumor', unlock: 'Resolve 2 incidents', body: 'Staff whispers describe an invitation-only circle that never appears on public schedules.' },
+  { id: 'midnight-door', title: 'Midnight Door Note', unlock: 'Own 3 tables', body: 'A door behind the roulette wall is labeled only with a matte black diamond.' },
+  { id: 'director-ledger', title: 'Director Ledger Fragment', unlock: 'High Roller score 5000', body: 'The ledger lists reputation, not credits, as the true currency of Onyx.' }
+];
+
+const defaultHouseEdge = () => ({
+  unlocked: false,
+  reputation: 20,
+  securityRisk: 18,
+  staffMorale: 72,
+  tableHeat: 24,
+  lastIncomeClaimAt: null,
+  lifetimeHouseIncome: 0,
+  ownedTables: [],
+  staffRoster: [],
+  assignments: {},
+  npcTraffic: {
+    mood: 'Curious',
+    spendingPressure: 28,
+    vipPresence: 8,
+    tableDemand: 34,
+    mix: { tourists: 38, regulars: 26, highRollers: 10, vipWhales: 2, suspiciousPlayers: 4, streamers: 3, nightGuests: 17 }
+  },
+  surveillanceAlerts: [],
+  surveillanceResolved: 0,
+  operationsLog: [],
+  edgeTools: {},
+  toolReports: [],
+  loreUnlocked: ['founder-brief'],
+  eventHistory: [],
+  activeEvent: null
+});
+
 const defaultPenthouse = () => ({
   ownedAssets: [],
   equippedAssets: [],
@@ -174,7 +260,7 @@ const defaultSessions = () => Object.fromEntries(PLAYABLE_GAMES.map(game => [gam
 const defaultAchievements = () => Object.fromEntries(ACHIEVEMENTS.map(item => [item.id, { unlocked: false, unlockedAt: null }]));
 
 export const defaultState = {
-  version: 2,
+  version: 3,
   username: 'Guest Player',
   balance: 0,
   level: 1,
@@ -207,6 +293,7 @@ export const defaultState = {
     invited: false,
     lastViewedAt: null
   },
+  houseEdge: defaultHouseEdge(),
   retention: {
     comebackClaimedDate: null,
     lastPromptAt: null,
@@ -262,6 +349,10 @@ export function getState() { return state; }
 export function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
 export function saveState() {
   if (state.highRoller && getHighRollerAccess().access) state.highRoller.invited = true;
+  if (state.houseEdge && getHouseEdgeAccess().unlocked) {
+    state.houseEdge.unlocked = true;
+    maybeUnlockLore();
+  }
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   listeners.forEach(listener => listener(state));
 }
@@ -745,6 +836,315 @@ export function awardOnyxNotes(amount, detail = 'Onyx Notes reward', shouldSave 
   return notes;
 }
 
+export function getHouseEdgeAccess() {
+  const lifestyle = getLifestyleLevel();
+  const ownsShares = state.penthouse.ownedAssets.includes('onyx-house-shares');
+  const vipOk = ['Gold', 'Platinum', 'Onyx'].includes(getVipTier().name);
+  const unlocked = lifestyle >= 5 || ownsShares || vipOk || !!state.houseEdge.unlocked;
+  return { unlocked, lifestyle, ownsShares, vipOk };
+}
+
+export function refreshNpcTraffic() {
+  const tables = state.houseEdge.ownedTables.length;
+  const staffPower = getStaffPower();
+  const event = state.tonightAtOnyx?.rewardMultiplier || 1;
+  const prestige = getPrestigeValue();
+  const reputation = safeNumber(state.houseEdge.reputation, 20);
+  const security = safeNumber(state.houseEdge.securityRisk, 18);
+  const demand = clamp(22 + tables * 9 + reputation * 0.45 + staffPower * 0.12 + (event - 1) * 18, 5, 96);
+  const vipPresence = clamp(5 + getLifestyleLevel() * 2.2 + (getHighRollerAccess().access ? 12 : 0) + prestige / 900, 0, 55);
+  const suspiciousPlayers = clamp(3 + security / 7 + tables * 0.7 - staffPower / 45, 1, 28);
+  state.houseEdge.npcTraffic = {
+    mood: reputation > 72 ? 'Electric' : reputation > 48 ? 'Confident' : security > 58 ? 'Uneasy' : 'Curious',
+    spendingPressure: Math.floor(clamp(demand + vipPresence * 0.4, 5, 98)),
+    vipPresence: Math.floor(vipPresence),
+    tableDemand: Math.floor(demand),
+    mix: {
+      tourists: Math.floor(clamp(42 - tables * 1.5, 15, 48)),
+      regulars: Math.floor(clamp(24 + reputation / 6, 16, 42)),
+      highRollers: Math.floor(clamp(8 + vipPresence / 3, 3, 30)),
+      vipWhales: Math.floor(clamp(vipPresence / 12, 0, 8)),
+      suspiciousPlayers: Math.floor(suspiciousPlayers),
+      streamers: Math.floor(clamp(2 + demand / 24, 1, 8)),
+      nightGuests: Math.floor(clamp(14 + tables * 2, 8, 32))
+    }
+  };
+  return state.houseEdge.npcTraffic;
+}
+
+export function getHouseEdgeSummary() {
+  const access = getHouseEdgeAccess();
+  if (access.unlocked && !state.houseEdge.unlocked) state.houseEdge.unlocked = true;
+  refreshNpcTraffic();
+  const incomeRate = getHouseIncomeRate();
+  return {
+    access,
+    rank: getManagementRank(),
+    incomeRate,
+    incomeReady: getHouseIncomeReady(),
+    staffPower: getStaffPower(),
+    tableCount: state.houseEdge.ownedTables.length,
+    averageCondition: averageTableMetric('condition'),
+    averagePopularity: averageTableMetric('popularity')
+  };
+}
+
+export function buyTableLicense(tableId) {
+  const license = getTableLicense(tableId);
+  if (!license) throw new Error('Table license not found');
+  if (state.houseEdge.ownedTables.some(table => table.licenseId === tableId)) throw new Error('Table license already owned');
+  if (state.balance < license.cost) throw new Error(`Not enough credits. Need ${formatCredits(license.cost)}`);
+  state.balance -= license.cost;
+  state.houseEdge.ownedTables.push({
+    id: id(),
+    licenseId: tableId,
+    level: 1,
+    condition: 88,
+    popularity: license.popularity,
+    heat: 24 + license.risk,
+    assignedStaffId: null,
+    purchasedAt: timeNow()
+  });
+  state.houseEdge.reputation += license.reputation;
+  state.houseEdge.securityRisk = clamp(state.houseEdge.securityRisk + Math.ceil(license.risk / 4), 0, 100);
+  logOperation(`Purchased ${license.name} license`, -license.cost, 'Table ownership');
+  addXP(Math.floor(license.cost / 500), false);
+  addVaultProgress(Math.floor(license.cost / 650), false);
+  saveState();
+  return license;
+}
+
+export function upgradeHouseTable(tableId) {
+  const table = getOwnedTable(tableId);
+  if (!table) throw new Error('Owned table not found');
+  const cost = getTableUpgradeCost(table);
+  if (state.balance < cost) throw new Error(`Not enough credits. Need ${formatCredits(cost)}`);
+  state.balance -= cost;
+  table.level += 1;
+  table.condition = clamp(table.condition + 8, 0, 100);
+  table.popularity = clamp(table.popularity + 6, 0, 100);
+  table.heat = clamp(table.heat + 3, 0, 100);
+  state.houseEdge.reputation += 2;
+  logOperation(`Upgraded ${getTableLicense(table.licenseId)?.name || 'table'} to level ${table.level}`, -cost, 'Table upgrade');
+  saveState();
+  return table;
+}
+
+export function repairHouseTable(tableId) {
+  const table = getOwnedTable(tableId);
+  if (!table) throw new Error('Owned table not found');
+  const cost = Math.max(250, Math.floor((100 - table.condition) * 35));
+  if (state.balance < cost) throw new Error(`Not enough credits. Need ${formatCredits(cost)}`);
+  state.balance -= cost;
+  table.condition = clamp(table.condition + 28, 0, 100);
+  table.heat = clamp(table.heat - 6, 0, 100);
+  state.houseEdge.securityRisk = clamp(state.houseEdge.securityRisk - 2, 0, 100);
+  logOperation(`Maintained ${getTableLicense(table.licenseId)?.name || 'table'}`, -cost, 'Maintenance');
+  saveState();
+  return table;
+}
+
+export function hireStaff(candidateId) {
+  const candidate = STAFF_CANDIDATES.find(staff => staff.id === candidateId);
+  if (!candidate) throw new Error('Staff candidate not found');
+  if (state.houseEdge.staffRoster.some(staff => staff.candidateId === candidateId)) throw new Error('Staff member already hired');
+  const hireCost = candidate.salary * 2;
+  if (state.balance < hireCost) throw new Error(`Not enough credits. Need ${formatCredits(hireCost)}`);
+  state.balance -= hireCost;
+  const staff = { ...candidate, id: id(), candidateId, hiredAt: timeNow(), assignedTableId: null, training: 0 };
+  state.houseEdge.staffRoster.push(staff);
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale + 2, 0, 100);
+  logOperation(`Hired ${candidate.name}, ${candidate.role}`, -hireCost, candidate.trait);
+  saveState();
+  return staff;
+}
+
+export function assignStaff(tableId, staffId) {
+  const table = getOwnedTable(tableId);
+  const staff = state.houseEdge.staffRoster.find(member => member.id === staffId);
+  if (!table || !staff) throw new Error('Assignment target not found');
+  table.assignedStaffId = staff.id;
+  staff.assignedTableId = table.id;
+  state.houseEdge.assignments[table.id] = staff.id;
+  logOperation(`${staff.name} assigned to ${getTableLicense(table.licenseId)?.name || 'table'}`, 0, staff.role);
+  saveState();
+  return { table, staff };
+}
+
+export function trainStaff(staffId) {
+  const staff = state.houseEdge.staffRoster.find(member => member.id === staffId);
+  if (!staff) throw new Error('Staff member not found');
+  const cost = Math.floor(staff.salary * 1.5);
+  if (state.balance < cost) throw new Error(`Not enough credits. Need ${formatCredits(cost)}`);
+  state.balance -= cost;
+  staff.skill = clamp(staff.skill + 7, 0, 100);
+  staff.morale = clamp(staff.morale + 4, 0, 100);
+  staff.training += 1;
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale + 1, 0, 100);
+  logOperation(`Trained ${staff.name}`, -cost, 'Staff training');
+  saveState();
+  return staff;
+}
+
+export function payStaffSalary() {
+  const total = state.houseEdge.staffRoster.reduce((sum, staff) => sum + staff.salary, 0);
+  if (total <= 0) throw new Error('No staff salaries are due');
+  if (state.balance < total) throw new Error(`Not enough credits. Need ${formatCredits(total)}`);
+  state.balance -= total;
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale + 6, 0, 100);
+  state.houseEdge.staffRoster.forEach(staff => { staff.morale = clamp(staff.morale + 5, 0, 100); });
+  logOperation('Paid staff salary cycle', -total, 'Morale improved');
+  saveState();
+  return total;
+}
+
+export function fireStaff(staffId) {
+  const staff = state.houseEdge.staffRoster.find(member => member.id === staffId);
+  if (!staff) throw new Error('Staff member not found');
+  state.houseEdge.staffRoster = state.houseEdge.staffRoster.filter(member => member.id !== staff.id);
+  state.houseEdge.ownedTables.forEach(table => { if (table.assignedStaffId === staff.id) table.assignedStaffId = null; });
+  delete state.houseEdge.assignments[staff.assignedTableId];
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale - 5, 0, 100);
+  logOperation(`Released ${staff.name} from staff`, 0, 'Roster change');
+  saveState();
+  return staff;
+}
+
+export function collectHouseIncome() {
+  const amount = getHouseIncomeReady();
+  if (amount <= 0) throw new Error('House income is not ready yet');
+  state.balance += amount;
+  state.houseEdge.lifetimeHouseIncome += amount;
+  state.houseEdge.lastIncomeClaimAt = new Date().toISOString();
+  state.houseEdge.ownedTables.forEach(table => {
+    table.condition = clamp(table.condition - 2, 0, 100);
+    table.heat = clamp(table.heat + 1, 0, 100);
+  });
+  addVaultProgress(Math.floor(amount / 35), false);
+  awardOnyxNotes(Math.max(1, Math.floor(amount / 3000)), 'House income milestone', false);
+  logOperation('Collected house income', amount, 'Operations income');
+  saveState();
+  return amount;
+}
+
+export function seedSurveillanceAlert() {
+  if (state.houseEdge.surveillanceAlerts.length >= 4) return null;
+  const incident = pick(SURVEILLANCE_INCIDENTS);
+  const alert = { id: id(), incidentId: incident.id, createdAt: timeNow(), status: 'open' };
+  state.houseEdge.surveillanceAlerts.unshift(alert);
+  logOperation(`Surveillance alert: ${incident.title}`, 0, 'Control room');
+  saveState();
+  return alert;
+}
+
+export function resolveSurveillanceAlert(alertId, action) {
+  const alert = state.houseEdge.surveillanceAlerts.find(item => item.id === alertId);
+  if (!alert) throw new Error('Surveillance alert not found');
+  const incident = SURVEILLANCE_INCIDENTS.find(item => item.id === alert.incidentId);
+  const good = action === incident.bestAction;
+  const credit = good ? 450 + incident.severity * 22 : -Math.floor(incident.severity * 18);
+  state.balance = Math.max(0, state.balance + credit);
+  state.houseEdge.reputation = clamp(state.houseEdge.reputation + (good ? 4 : -2), 0, 100);
+  state.houseEdge.securityRisk = clamp(state.houseEdge.securityRisk + (good ? -5 : 4), 0, 100);
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale + (good ? 2 : -2), 0, 100);
+  state.houseEdge.surveillanceResolved += good ? 1 : 0;
+  if (good) {
+    addVaultProgress(90 + incident.severity * 2, false);
+    awardOnyxNotes(1, `Resolved ${incident.title}`, false);
+  }
+  state.houseEdge.surveillanceAlerts = state.houseEdge.surveillanceAlerts.filter(item => item.id !== alert.id);
+  logOperation(`${good ? 'Resolved' : 'Closed'} ${incident.title}`, credit, actionLabel(action));
+  maybeUnlockLore();
+  saveState();
+  return { good, credit, incident };
+}
+
+export function unlockEdgeTool(toolId) {
+  const tool = EDGE_TOOLS.find(item => item.id === toolId);
+  if (!tool) throw new Error('Edge tool not found');
+  if (state.houseEdge.edgeTools[toolId]) throw new Error('Tool already unlocked');
+  if (state.onyxNotes.balance < tool.cost) throw new Error(`Need ${tool.cost} Onyx Notes`);
+  state.onyxNotes.balance -= tool.cost;
+  state.houseEdge.edgeTools[toolId] = { unlockedAt: timeNow(), uses: 0 };
+  logOperation(`Unlocked ${tool.name}`, 0, 'Simulator edge tool');
+  saveState();
+  return tool;
+}
+
+export function useEdgeTool(toolId) {
+  const tool = EDGE_TOOLS.find(item => item.id === toolId);
+  if (!tool || !state.houseEdge.edgeTools[toolId]) throw new Error('Tool is locked');
+  const report = {
+    toolId,
+    text: edgeToolReport(tool),
+    time: timeNow()
+  };
+  state.houseEdge.edgeTools[toolId].uses += 1;
+  state.houseEdge.toolReports.unshift(report);
+  state.houseEdge.toolReports = state.houseEdge.toolReports.slice(0, 8);
+  logOperation(`${tool.name} generated a simulator hint`, 0, tool.game);
+  saveState();
+  return report;
+}
+
+export function generateOperationsEvent() {
+  const event = pick(OPERATIONS_EVENTS);
+  state.houseEdge.activeEvent = { id: id(), eventId: event.id, createdAt: timeNow() };
+  logOperation(`Operations event: ${event.title}`, 0, 'Decision ready');
+  saveState();
+  return state.houseEdge.activeEvent;
+}
+
+export function resolveOperationsEvent(choice) {
+  const active = state.houseEdge.activeEvent;
+  if (!active) throw new Error('No operations event is active');
+  const event = OPERATIONS_EVENTS.find(item => item.id === active.eventId);
+  const strongChoice = event.choices.includes(choice);
+  const rep = strongChoice ? 3 : -1;
+  const income = strongChoice ? 650 + state.houseEdge.ownedTables.length * 90 : 120;
+  state.balance += income;
+  state.houseEdge.reputation = clamp(state.houseEdge.reputation + rep, 0, 100);
+  state.houseEdge.securityRisk = clamp(state.houseEdge.securityRisk + (choice.includes('security') || choice.includes('analyst') ? -3 : 1), 0, 100);
+  state.houseEdge.staffMorale = clamp(state.houseEdge.staffMorale + (choice.includes('ignore') ? -4 : 2), 0, 100);
+  awardOnyxNotes(strongChoice ? 1 : 0, `Operations event: ${event.title}`, false);
+  addVaultProgress(strongChoice ? 80 : 35, false);
+  state.houseEdge.eventHistory.unshift({ event: event.title, choice, income, time: timeNow() });
+  state.houseEdge.eventHistory = state.houseEdge.eventHistory.slice(0, 12);
+  state.houseEdge.activeEvent = null;
+  logOperation(`Handled ${event.title}`, income, choiceLabel(choice));
+  saveState();
+  return { event, income, strongChoice };
+}
+
+export function unlockLoreFile(fileId) {
+  const file = LORE_FILES.find(item => item.id === fileId);
+  if (!file) throw new Error('Lore file not found');
+  if (!state.houseEdge.loreUnlocked.includes(file.id)) state.houseEdge.loreUnlocked.push(file.id);
+  saveState();
+  return file;
+}
+
+export function getManagementRank() {
+  const tableCount = state.houseEdge.ownedTables.length;
+  const staffPower = getStaffPower();
+  const score = tableCount * 520 + state.houseEdge.reputation * 18 + getNetWorth() / 90 + staffPower * 5 + state.houseEdge.surveillanceResolved * 220 + getHighRollerScore() / 8;
+  const title = score >= 9000 ? 'The House'
+    : score >= 6800 ? 'Onyx Director'
+    : score >= 5000 ? 'Executive Host'
+    : score >= 3400 ? 'House Partner'
+    : score >= 2100 ? 'Floor Operator'
+    : score >= 900 ? 'Table Owner'
+    : getHouseEdgeAccess().unlocked ? 'Investor'
+    : 'Guest';
+  return { title, score: Math.floor(score) };
+}
+
+export function getTableLicense(idToFind) { return TABLE_LICENSES.find(table => table.id === idToFind); }
+export function getStaffCandidate(idToFind) { return STAFF_CANDIDATES.find(staff => staff.id === idToFind); }
+export function getSurveillanceIncident(idToFind) { return SURVEILLANCE_INCIDENTS.find(item => item.id === idToFind); }
+export function getOperationsEvent(idToFind) { return OPERATIONS_EVENTS.find(item => item.id === idToFind); }
+export function getLoreFile(idToFind) { return LORE_FILES.find(item => item.id === idToFind); }
+
 export function updateMissionProgress(id, amount) {
   if (!state.missions[id] || state.missions[id].claimed) return;
   state.missions[id].progress += Math.max(0, Math.floor(Number(amount) || 0));
@@ -891,6 +1291,35 @@ export function getHighRollerAccess() {
   const access = getVipTier().name !== 'Bronze' || lifestyle >= 4 || getNetWorth() >= 50000 || state.vault.level >= 8 || hasShare;
   return { access, hasShare, lifestyle, score: getHighRollerScore() };
 }
+export function getHouseIncomeRate() {
+  const shareBoost = state.penthouse.ownedAssets.includes('onyx-house-shares') ? 1.15 : 1;
+  const hostBoost = state.houseEdge.staffRoster.some(staff => staff.role === 'VIP Host') ? 1.08 : 1;
+  const eventBoost = Number(state.tonightAtOnyx?.rewardMultiplier || 1);
+  const tableIncome = state.houseEdge.ownedTables.reduce((sum, table) => {
+    const license = getTableLicense(table.licenseId);
+    if (!license) return sum;
+    const staff = state.houseEdge.staffRoster.find(member => member.id === table.assignedStaffId);
+    const staffBoost = staff ? 1 + staff.skill / 350 : 0.82;
+    const condition = clamp(table.condition, 0, 100) / 100;
+    const heat = 1 + clamp(table.heat, 0, 100) / 500;
+    return sum + license.baseIncome * table.level * condition * heat * staffBoost;
+  }, 0);
+  return Math.floor(tableIncome * shareBoost * hostBoost * eventBoost);
+}
+export function getHouseIncomeReady() {
+  const rate = getHouseIncomeRate();
+  if (!rate) return 0;
+  if (!state.houseEdge.lastIncomeClaimAt) return rate;
+  const elapsedHours = Math.min(12, Math.max(0, (Date.now() - Date.parse(state.houseEdge.lastIncomeClaimAt)) / (60 * 60 * 1000)));
+  return Math.floor(rate * elapsedHours);
+}
+export function getTableUpgradeCost(table) {
+  const license = getTableLicense(table.licenseId);
+  return Math.floor((license?.cost || 10000) * (0.35 + table.level * 0.18));
+}
+export function getStaffPower() {
+  return Math.floor(state.houseEdge.staffRoster.reduce((sum, staff) => sum + staff.skill + staff.morale * 0.35, 0));
+}
 export function getCosmetic(idToFind) { return COSMETICS.find(item => item.id === idToFind); }
 export function getEquippedCosmetic(type) { return getCosmetic(state.cosmetics.equipped[type]); }
 export function getEventXpMultiplier() {
@@ -935,7 +1364,7 @@ function ensureGameSession(game) {
 }
 function sanitizeState(nextState) {
   const incomingVersion = safeNumber(nextState.version, 1);
-  nextState.version = 2;
+  nextState.version = 3;
   nextState.balance = safeNumber(nextState.balance, 10000);
   nextState.level = Math.max(1, safeNumber(nextState.level, 1));
   nextState.xp = safeNumber(nextState.xp, 0);
@@ -963,6 +1392,7 @@ function sanitizeState(nextState) {
   nextState.onyxNotes.balance = safeNumber(nextState.onyxNotes.balance, 0);
   nextState.onyxNotes.history = Array.isArray(nextState.onyxNotes.history) ? nextState.onyxNotes.history.slice(0, 20) : [];
   nextState.highRoller = mergeDeep(structuredClone(defaultState.highRoller), nextState.highRoller || {});
+  nextState.houseEdge = sanitizeHouseEdge(mergeDeep(defaultHouseEdge(), nextState.houseEdge || {}));
   nextState.retention = mergeDeep(structuredClone(defaultState.retention), nextState.retention || {});
   nextState.promoCodes = nextState.promoCodes && typeof nextState.promoCodes === 'object' ? nextState.promoCodes : {};
   nextState.stats = mergeDeep(structuredClone(defaultState.stats), nextState.stats || {});
@@ -1015,6 +1445,89 @@ function sanitizeInvestments(items) {
     collected: !!item?.collected
   })).filter(item => item.principal > 0) : [];
 }
+function sanitizeHouseEdge(edge) {
+  edge.reputation = clamp(safeNumber(edge.reputation, 20), 0, 100);
+  edge.securityRisk = clamp(safeNumber(edge.securityRisk, 18), 0, 100);
+  edge.staffMorale = clamp(safeNumber(edge.staffMorale, 72), 0, 100);
+  edge.tableHeat = clamp(safeNumber(edge.tableHeat, 24), 0, 100);
+  edge.lifetimeHouseIncome = safeNumber(edge.lifetimeHouseIncome, 0);
+  edge.surveillanceResolved = safeNumber(edge.surveillanceResolved, 0);
+  edge.ownedTables = Array.isArray(edge.ownedTables) ? edge.ownedTables.slice(0, 12).map(table => ({
+    id: String(table?.id || id()),
+    licenseId: getTableLicense(table?.licenseId) ? table.licenseId : TABLE_LICENSES[0].id,
+    level: Math.max(1, safeNumber(table?.level, 1)),
+    condition: clamp(safeNumber(table?.condition, 88), 0, 100),
+    popularity: clamp(safeNumber(table?.popularity, getTableLicense(table?.licenseId)?.popularity || 60), 0, 100),
+    heat: clamp(safeNumber(table?.heat, 30), 0, 100),
+    assignedStaffId: table?.assignedStaffId ? String(table.assignedStaffId) : null,
+    purchasedAt: String(table?.purchasedAt || timeNow())
+  })) : [];
+  edge.staffRoster = Array.isArray(edge.staffRoster) ? edge.staffRoster.slice(0, 14).map(staff => ({
+    ...staff,
+    id: String(staff?.id || id()),
+    candidateId: String(staff?.candidateId || staff?.id || ''),
+    name: String(staff?.name || 'Onyx Staff'),
+    role: ['Dealer', 'Floor Manager', 'Security Analyst', 'VIP Host', 'Technician'].includes(staff?.role) ? staff.role : 'Dealer',
+    skill: clamp(safeNumber(staff?.skill, 50), 0, 100),
+    salary: Math.max(0, safeNumber(staff?.salary, 400)),
+    morale: clamp(safeNumber(staff?.morale, 70), 0, 100),
+    trait: String(staff?.trait || 'Reliable'),
+    bonus: String(staff?.bonus || 'Supports operations'),
+    riskModifier: safeNumber(staff?.riskModifier, 0),
+    assignedTableId: staff?.assignedTableId ? String(staff.assignedTableId) : null,
+    training: safeNumber(staff?.training, 0)
+  })) : [];
+  edge.assignments = edge.assignments && typeof edge.assignments === 'object' ? edge.assignments : {};
+  edge.surveillanceAlerts = Array.isArray(edge.surveillanceAlerts) ? edge.surveillanceAlerts.slice(0, 6).map(alert => ({
+    id: String(alert?.id || id()),
+    incidentId: getSurveillanceIncident(alert?.incidentId) ? alert.incidentId : SURVEILLANCE_INCIDENTS[0].id,
+    createdAt: String(alert?.createdAt || timeNow()),
+    status: String(alert?.status || 'open')
+  })) : [];
+  edge.operationsLog = Array.isArray(edge.operationsLog) ? edge.operationsLog.slice(0, 30) : [];
+  edge.edgeTools = edge.edgeTools && typeof edge.edgeTools === 'object' ? edge.edgeTools : {};
+  edge.toolReports = Array.isArray(edge.toolReports) ? edge.toolReports.slice(0, 8) : [];
+  edge.loreUnlocked = Array.from(new Set(Array.isArray(edge.loreUnlocked) ? edge.loreUnlocked.filter(fileId => LORE_FILES.some(file => file.id === fileId)) : ['founder-brief']));
+  if (!edge.loreUnlocked.includes('founder-brief')) edge.loreUnlocked.unshift('founder-brief');
+  edge.eventHistory = Array.isArray(edge.eventHistory) ? edge.eventHistory.slice(0, 12) : [];
+  if (edge.activeEvent && !getOperationsEvent(edge.activeEvent.eventId)) edge.activeEvent = null;
+  return edge;
+}
+function getOwnedTable(tableId) { return state.houseEdge.ownedTables.find(table => table.id === tableId); }
+function averageTableMetric(metric) {
+  if (!state.houseEdge.ownedTables.length) return 0;
+  return Math.floor(state.houseEdge.ownedTables.reduce((sum, table) => sum + safeNumber(table[metric], 0), 0) / state.houseEdge.ownedTables.length);
+}
+function logOperation(result, profit = 0, detail = 'Operations') {
+  const item = { result, profit: Math.floor(profit || 0), detail, time: timeNow() };
+  state.houseEdge.operationsLog.unshift(item);
+  state.houseEdge.operationsLog = state.houseEdge.operationsLog.slice(0, 30);
+  state.transactions.unshift({ id: id(), game: 'House Edge', bet: profit < 0 ? Math.abs(profit) : 0, result, profit, detail, time: item.time });
+  state.transactions = state.transactions.slice(0, 80);
+}
+function maybeUnlockLore() {
+  if (state.houseEdge.surveillanceResolved >= 2 && !state.houseEdge.loreUnlocked.includes('syndicate-rumor')) state.houseEdge.loreUnlocked.push('syndicate-rumor');
+  if (state.houseEdge.ownedTables.length >= 3 && !state.houseEdge.loreUnlocked.includes('midnight-door')) state.houseEdge.loreUnlocked.push('midnight-door');
+  if (state.vault.level >= 5 && !state.houseEdge.loreUnlocked.includes('vault-echo')) state.houseEdge.loreUnlocked.push('vault-echo');
+  if (getManagementRank().title !== 'Guest' && getManagementRank().title !== 'Investor' && !state.houseEdge.loreUnlocked.includes('black-card-record')) state.houseEdge.loreUnlocked.push('black-card-record');
+  if (getHighRollerScore() >= 5000 && !state.houseEdge.loreUnlocked.includes('director-ledger')) state.houseEdge.loreUnlocked.push('director-ledger');
+}
+function edgeToolReport(tool) {
+  const reports = {
+    'blackjack-lens': `Shoe texture: ${pick(['low paint cards', 'balanced ranks', 'face-card heavy'])}. Simulator hint only; outcomes remain random.`,
+    'crash-analyzer': `Volatility mood: ${pick(['low chop', 'medium surge', 'high spike'])}. Consider bet size discipline in the simulator.`,
+    'roulette-map': `Recent heat: ${pick(['low numbers clustered', 'even spread', 'red side active', 'third dozen visible'])}. This does not predict the next spin.`,
+    'mines-scanner': `Risk mood: ${pick(['calm grid', 'tense middle', 'edge pressure'])}. No mine positions are revealed.`,
+    'plinko-meter': `Volatility read: ${pick(['soft center bias', 'balanced spread', 'outer-slot swing'])}. Higher risk remains more variable.`
+  };
+  return reports[tool.id] || tool.hint;
+}
+function actionLabel(action) {
+  return ({ observe: 'Observed quietly', warn: 'Issued floor warning', escort: 'Escorted from floor', compensate: 'VIP compensated', technician: 'Technician called', analyst: 'Security analyst assigned', manager: 'Manager assigned', ignore: 'Ignored' }[action] || action);
+}
+function choiceLabel(choice) {
+  return String(choice || '').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
 function chooseVaultReward(crateType) {
   const rarityRolls = {
     daily: [['Common', 50], ['Rare', 30], ['Epic', 15], ['Legendary', 4], ['Onyx', 1]],
@@ -1053,6 +1566,9 @@ function emitBigWinHook(game, profit, wager) {
 function safeNumber(value, fallback) {
   const number = Number(value);
   return Number.isFinite(number) ? Math.floor(number) : fallback;
+}
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, Number(value) || 0));
 }
 function mergeDeep(target, source) {
   for (const key of Object.keys(source || {})) {
