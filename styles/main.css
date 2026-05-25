@@ -245,7 +245,7 @@ p { line-height: 1.6; }
 
 .topbar {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr 0.8fr auto;
+  grid-template-columns: 1.25fr 1fr 1fr 0.8fr 1.1fr 0.9fr auto;
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -1369,10 +1369,196 @@ body.theme-vip .hero-panel { background: radial-gradient(circle at 82% 28%, rgba
   color: var(--muted);
 }
 
+.penthouse-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 18px;
+  min-height: 300px;
+  margin-bottom: 16px;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 12, 0.25), rgba(8, 8, 12, 0.86)),
+    linear-gradient(135deg, rgba(245, 200, 106, 0.16), rgba(215, 51, 77, 0.08)),
+    repeating-linear-gradient(90deg, transparent 0 42px, rgba(245, 200, 106, 0.08) 43px 44px);
+}
+.penthouse-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background:
+    linear-gradient(to top, #050507, transparent),
+    repeating-linear-gradient(90deg, #0b0b10 0 32px, #17131a 33px 44px, transparent 45px 68px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+.penthouse-hero > * { position: relative; z-index: 1; }
+.penthouse-hero h2 {
+  color: var(--gold);
+  text-shadow: 0 0 24px rgba(245, 200, 106, 0.24);
+}
+.asset-grid, .investment-grid, .high-table-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.showcase-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.asset-card, .investment-card, .high-table, .unlock-list article {
+  border: 1px solid rgba(245, 200, 106, 0.18);
+  border-radius: var(--radius);
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(245, 200, 106, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(8, 8, 12, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+.asset-card.is-equipped {
+  border-color: rgba(245, 200, 106, 0.62);
+  box-shadow: 0 0 26px rgba(245, 200, 106, 0.12);
+}
+.asset-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.asset-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(245, 200, 106, 0.38);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 200, 106, 0.18), rgba(215, 51, 77, 0.08));
+  color: var(--gold);
+  font-weight: 1000;
+}
+.asset-card p, .investment-card p, .high-table p { color: var(--muted); }
+.asset-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+.asset-metrics span {
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+}
+.asset-metrics strong, .asset-metrics small { display: block; }
+.asset-metrics small { color: var(--muted); font-size: 11px; }
+.rarity-rare { border-color: rgba(105, 167, 255, 0.28); }
+.rarity-epic { border-color: rgba(232, 63, 97, 0.38); }
+.rarity-legendary { border-color: rgba(245, 200, 106, 0.48); }
+.rarity-onyx { border-color: rgba(255, 248, 232, 0.52); box-shadow: 0 0 28px rgba(245, 200, 106, 0.14); }
+.trend {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 1000;
+}
+.trend-up { color: var(--green); }
+.trend-down { color: #ff8ea0; }
+.luxury-market {
+  display: grid;
+  gap: 10px;
+}
+.market-state {
+  padding: 14px;
+  border: 1px solid rgba(245, 200, 106, 0.28);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(245, 200, 106, 0.12), rgba(215, 51, 77, 0.06));
+}
+.market-state strong { display: block; margin-top: 4px; font-size: 24px; }
+.market-ticker {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+}
+.market-ticker span {
+  padding: 8px;
+  border-left: 2px solid var(--gold);
+  background: rgba(255, 255, 255, 0.035);
+}
+.investment-panel { margin-top: 18px; }
+.investment-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+}
+.high-roller-hero {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 16px;
+  background:
+    radial-gradient(circle at 14% 50%, rgba(245, 200, 106, 0.22), transparent 22%),
+    linear-gradient(135deg, rgba(7, 7, 10, 0.96), rgba(82, 8, 21, 0.36));
+}
+.high-roller-door {
+  position: relative;
+  min-height: 260px;
+  border: 1px solid rgba(245, 200, 106, 0.35);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(90deg, transparent 46%, rgba(245, 200, 106, 0.48) 48% 52%, transparent 54%),
+    radial-gradient(circle at 50% 20%, rgba(245, 200, 106, 0.18), transparent 28%),
+    linear-gradient(180deg, #18121a, #07070b);
+  box-shadow: inset 0 0 32px rgba(245, 200, 106, 0.12), 0 0 34px rgba(215, 51, 77, 0.12);
+}
+.high-roller-door span {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  width: 54px;
+  height: 54px;
+  border: 2px solid var(--gold);
+  border-radius: 9px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.unlock-list {
+  display: grid;
+  gap: 8px;
+}
+.unlock-list article {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.unlock-list article span { color: #ff8ea0; font-weight: 900; }
+.unlock-list article.is-done span { color: var(--green); }
+.high-table.is-locked { opacity: 0.72; }
+.vip-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(245, 200, 106, 0.14);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+.luxury-pulse .main {
+  animation: luxuryPulse 0.7s ease both;
+}
+.wide-panel { grid-column: span 2; }
+
+@keyframes luxuryPulse {
+  40% { filter: drop-shadow(0 0 24px rgba(245, 200, 106, 0.18)); }
+}
+
 @media (max-width: 1180px) {
   .topbar, .game-grid, .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .topbar .ghost { grid-column: span 2; }
   .dashboard-grid, .game-layout, .roulette-layout, .profile-layout, .live-casino-grid, .live-floor-strip, .event-banner { grid-template-columns: 1fr; }
+  .penthouse-hero, .high-roller-hero { grid-template-columns: 1fr; }
+  .asset-grid, .investment-grid, .high-table-grid, .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wide-panel { grid-column: auto; }
   .benefit-grid, .vip-hero, .settings-layout, .history-filters, .known-grid { grid-template-columns: 1fr; }
   .event-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -1399,6 +1585,9 @@ body.theme-vip .hero-panel { background: radial-gradient(circle at 82% 28%, rgba
 @media (max-width: 560px) {
   .main, .sidebar { padding: 14px; }
   .topbar, .game-grid, .stats-grid, .risk-controls { grid-template-columns: 1fr; }
+  .asset-grid, .investment-grid, .high-table-grid, .showcase-grid, .asset-metrics { grid-template-columns: 1fr; }
+  .investment-row { grid-template-columns: 1fr; }
+  .high-roller-door { min-height: 180px; }
   .help-grid { grid-template-columns: 1fr; }
   .help-card.wide { grid-column: auto; }
   .recommended-row { grid-template-columns: 1fr; }

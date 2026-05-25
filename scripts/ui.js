@@ -5,24 +5,41 @@ import {
   DAILY_REWARDS,
   PLAYABLE_GAMES,
   PROMO_CODES,
+  INVESTMENT_OPTIONS,
+  LUXURY_ASSETS,
   VAULT_CRATES,
   addToSelectedBet,
+  buyLuxuryAsset,
   claimComebackBonus,
   claimDailyBonus,
+  claimPenthouseIncome,
   claimMission,
   claimPromoCode,
+  collectInvestment,
   clearHistory,
   clearSelectedBet,
   completeOnboarding,
   doubleBet,
+  equipLuxuryAsset,
   exportSave,
   favoriteGame,
   formatCredits,
+  formatMultiplier,
+  formatPercent,
   formatProfit,
   gameLabel,
   getDailyRewardForStreak,
+  getHighRollerAccess,
   getGameSession,
+  getLifestyleLevel,
+  getLuxuryAsset,
+  getLuxuryAssetValue,
+  getNetWorth,
   getNextDailyClaimText,
+  getPassiveIncomePerHour,
+  getPassiveIncomeReady,
+  getPrestigeStatus,
+  getPrestigeValue,
   getState,
   getTableLimit,
   getVaultProgress,
@@ -35,8 +52,11 @@ import {
   repeatBet,
   replayOnboarding,
   resetGameSession,
+  sellLuxuryAsset,
   setSelectedBet,
+  startInvestment,
   tierRewardMultiplier,
+  toggleWishlistAsset,
   updateSettings,
   updateUsername,
   xpNeeded
@@ -99,8 +119,8 @@ const modalCopy = {
     body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
   },
   'whats-new': {
-    title: 'Version 1: The Live Casino',
-    body: '<div class="release-list"><p><strong>The floor is alive:</strong> simulated online counts, live activity, hot games, and table chatter now move through the lobby.</p><p><strong>Tonight at Onyx:</strong> rotating casino events change ambience, featured games, XP, rewards, and Vault momentum.</p><p><strong>The Vault:</strong> earn Vault XP, keys, crates, cosmetics, prestige identity, and profile flex items through play.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
+    title: 'Version 2: Luxury & Power',
+    body: '<div class="release-list"><p><strong>The Onyx Penthouse:</strong> buy fictional luxury assets, grow net worth, equip a showcase, and collect browser-local passive income.</p><p><strong>Vault Investments:</strong> lock virtual credits into local Credit Bonds with maturity timers, projected returns, and simulated risk tiers.</p><p><strong>High Roller World:</strong> status-gated premium table variants reuse the existing games with richer labels and progression boosts.</p><p><strong>Prestige economy:</strong> lifestyle level, net worth rank, High Roller score, Onyx Notes, market trends, and rare listings give credits long-term meaning.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
   }
 };
 
@@ -119,6 +139,9 @@ export function renderAll() {
   renderLiveCasino();
   renderTonightAtOnyx();
   renderVault();
+  renderPenthouse();
+  renderInvestments();
+  renderHighRoller();
   renderRetentionPrompts();
   renderGameGrid(currentCategory());
   renderChipGroups();
@@ -154,6 +177,9 @@ export function renderTopbar() {
   text('#dailyBonusAmount', `+${formatCredits(dailyAmount)}`);
   text('#dailyBonusText', claimed ? 'Already claimed today.' : `${vip.current.name} tier bonus available.`);
   document.querySelector('#dailyBonusBtn').disabled = claimed;
+  text('#netWorthText', formatCredits(getNetWorth()));
+  text('#onyxNotesText', `${state.onyxNotes.balance.toLocaleString()} notes`);
+  text('#prestigeHeaderText', getPrestigeStatus().title);
 }
 
 export function renderLiveCasino() {
@@ -244,6 +270,146 @@ export function renderVault() {
   }
 }
 
+export function renderPenthouse() {
+  const state = getState();
+  const prestige = getPrestigeStatus();
+  const access = getHighRollerAccess();
+  text('#penthouseNetWorth', formatCredits(getNetWorth()));
+  text('#penthouseLifestyle', `Level ${getLifestyleLevel()}`);
+  text('#penthousePrestige', prestige.title);
+  text('#penthouseRank', prestige.rank);
+  text('#penthouseIncomeRate', `${formatCredits(getPassiveIncomePerHour())} / hour`);
+  text('#penthouseIncomeReady', formatCredits(getPassiveIncomeReady()));
+  text('#penthouseNotes', `${state.onyxNotes.balance.toLocaleString()} Onyx Notes`);
+  text('#penthouseHighRoller', access.access ? 'Invitation active' : 'Build lifestyle or VIP to unlock');
+  const claim = document.querySelector('#claimPenthouseIncomeBtn');
+  if (claim) claim.disabled = getPassiveIncomeReady() <= 0;
+
+  const showcase = document.querySelector('#assetShowcase');
+  if (showcase) {
+    const equipped = state.penthouse.equippedAssets.map(getLuxuryAsset).filter(Boolean);
+    showcase.innerHTML = equipped.length ? equipped.map(asset => assetCard(asset, { compact: true, equipped: true })).join('')
+      : '<p class="muted">Equip owned luxury assets to build your public penthouse showcase.</p>';
+  }
+
+  const store = document.querySelector('#assetStore');
+  if (store) {
+    const category = document.querySelector('#assetCategoryFilter')?.value || 'all';
+    const rarity = document.querySelector('#assetRarityFilter')?.value || 'all';
+    const assets = LUXURY_ASSETS.filter(asset => (category === 'all' || asset.category === category) && (rarity === 'all' || asset.rarity === rarity));
+    store.innerHTML = assets.map(asset => assetCard(asset, {
+      owned: state.penthouse.ownedAssets.includes(asset.id),
+      equipped: state.penthouse.equippedAssets.includes(asset.id),
+      wished: state.penthouse.wishlist.includes(asset.id)
+    })).join('');
+  }
+
+  const owned = document.querySelector('#ownedAssets');
+  if (owned) {
+    const assets = state.penthouse.ownedAssets.map(getLuxuryAsset).filter(Boolean);
+    owned.innerHTML = assets.length ? assets.map(asset => assetCard(asset, {
+      owned: true,
+      equipped: state.penthouse.equippedAssets.includes(asset.id),
+      ownedView: true
+    })).join('') : '<p class="muted">No luxury assets owned yet. Start with a watch or furniture piece when your credit stack is ready.</p>';
+  }
+
+  const market = document.querySelector('#luxuryMarketPanel');
+  if (market) {
+    const hot = getLuxuryAsset(state.luxuryMarket.hotAssetId);
+    const rare = getLuxuryAsset(state.luxuryMarket.rareAssetId);
+    market.innerHTML = `
+      <div class="market-state state-${state.luxuryMarket.state.toLowerCase().replace(/\s+/g, '-')}">
+        <span class="label">Market State</span><strong>${state.luxuryMarket.state}</strong>
+      </div>
+      <p><strong>Hot:</strong> ${hot?.name || 'Market opening'} ${hot ? marketTrend(hot.id) : ''}</p>
+      <p><strong>Rare listing:</strong> ${rare?.name || 'No rare listing yet'} ${rare ? marketTrend(rare.id) : ''}</p>
+      <div class="market-ticker">${(state.luxuryMarket.ticker || []).map(line => `<span>${line}</span>`).join('')}</div>
+    `;
+  }
+}
+
+export function renderInvestments() {
+  const state = getState();
+  const options = document.querySelector('#investmentOptions');
+  if (options) {
+    options.innerHTML = Object.entries(INVESTMENT_OPTIONS).map(([id, option]) => {
+      const amount = Number(document.querySelector('#investmentAmountInput')?.value || option.min);
+      const projected = Math.floor(Math.max(option.min, amount) * option.returnRate);
+      return `
+        <article class="investment-card">
+          <span class="label">${durationLabel(option.durationMs)} lock</span>
+          <h3>${option.label}</h3>
+          <p>${option.risk ? `${formatPercent(option.risk * 100)} simulated risk adjustment` : 'Guaranteed simulator return'}</p>
+          <div class="mini-stat"><span>Minimum</span><strong>${formatCredits(option.min)}</strong></div>
+          <div class="mini-stat"><span>Projected return</span><strong>+${formatCredits(projected)}</strong></div>
+          <button class="secondary full" data-start-investment="${id}">Start ${option.label}</button>
+        </article>
+      `;
+    }).join('');
+  }
+  const active = document.querySelector('#activeInvestments');
+  if (active) {
+    active.innerHTML = state.investments.active.length ? state.investments.active.map(item => {
+      const option = INVESTMENT_OPTIONS[item.optionId];
+      const matured = Date.parse(item.unlocksAt) <= Date.now();
+      return `
+        <article class="log-item investment-row">
+          <span>${option?.label || 'Credit Bond'}</span>
+          <strong>${formatCredits(item.principal)}</strong>
+          <small>${matured ? 'Ready to collect' : timeUntil(item.unlocksAt)}</small>
+          <small>Return ${(option?.returnRate * 100 || 0).toFixed(0)}%</small>
+          <button class="secondary small" data-collect-investment="${item.id}" ${matured ? '' : 'disabled'}>Collect</button>
+        </article>
+      `;
+    }).join('') : '<p class="muted">No active Vault Investments. Credits stay unlocked until you choose a browser-local bond.</p>';
+  }
+  const history = document.querySelector('#investmentHistory');
+  if (history) {
+    history.innerHTML = state.investments.history.length ? state.investments.history.map(item => `
+      <article class="log-item"><span>${new Date(item.collectedAt).toLocaleString()}</span><strong>${INVESTMENT_OPTIONS[item.optionId]?.label || 'Credit Bond'}</strong><small>${item.riskHit ? 'Risk adjusted' : 'Matured'}</small><small>${formatCredits(item.payout)}</small><b class="${item.profit >= 0 ? 'win' : 'lose'}">${formatProfit(item.profit)}</b></article>
+    `).join('') : '<p class="muted">Collected investments will appear here.</p>';
+  }
+}
+
+export function renderHighRoller() {
+  const access = getHighRollerAccess();
+  const prestige = getPrestigeStatus();
+  text('#highRollerStatus', access.access ? 'Invitation active' : 'Invitation locked');
+  text('#highRollerScore', access.score.toLocaleString());
+  text('#highRollerTitle', prestige.title);
+  const requirements = document.querySelector('#highRollerRequirements');
+  if (requirements) {
+    requirements.innerHTML = [
+      ['VIP Silver or better', getVipTier().name !== 'Bronze'],
+      ['Lifestyle level 4+', access.lifestyle >= 4],
+      ['Net worth 50,000 credits+', getNetWorth() >= 50000],
+      ['Vault level 8+', getState().vault.level >= 8],
+      ['Own Onyx House Shares or elite asset', access.hasShare]
+    ].map(([label, done]) => `<article class="${done ? 'is-done' : ''}"><span>${done ? 'Unlocked' : 'Locked'}</span><strong>${label}</strong></article>`).join('');
+  }
+  const tables = document.querySelector('#highRollerTables');
+  if (tables) {
+    const variants = [
+      ['Platinum Blackjack', 'blackjack', 'VIP shoe, higher table energy'],
+      ['Crimson Roulette', 'roulette', 'Premium wheel ambience'],
+      ['Diamond Crash', 'crash', 'Fast high-risk multiplier room'],
+      ['Onyx Plinko', 'plinko', 'Volatile showcase board'],
+      ['Private Mines', 'mines', 'Quiet risk room'],
+      ['Elite Dice', 'dice', 'Precision quick table']
+    ];
+    tables.innerHTML = variants.map(([name, game, detail]) => `
+      <article class="high-table ${access.access ? '' : 'is-locked'}">
+        <span class="vip-badge">High Roller</span>
+        <h3>${name}</h3>
+        <p>${detail}</p>
+        <small>Uses ${gameLabel(game)} engine - higher table fantasy, same virtual-credit simulator.</small>
+        <button class="secondary small" data-open-game="${game}" ${access.access ? '' : 'disabled'}>${access.access ? 'Enter Table' : 'Locked'}</button>
+      </article>
+    `).join('');
+  }
+}
+
 export function renderRetentionPrompts() {
   const state = getState();
   const prompts = [];
@@ -257,6 +423,15 @@ export function renderRetentionPrompts() {
   if (vault.needed - vault.xp <= 120) prompts.push('Vault reward ready soon.');
   if (state.dailyBonusDate === new Date().toISOString().slice(0, 10)) prompts.push('Daily streak continues tomorrow.');
   if (state.sessionProfit <= -2000 && state.retention.comebackClaimedDate !== new Date().toISOString().slice(0, 10)) prompts.push('Comeback reward available.');
+  const nextAsset = LUXURY_ASSETS
+    .filter(asset => !state.penthouse.ownedAssets.includes(asset.id))
+    .map(asset => ({ asset, value: getLuxuryAssetValue(asset.id) }))
+    .sort((a, b) => a.value - b.value)
+    .find(item => item.value > state.balance && item.value - state.balance <= Math.max(1200, state.balance * 0.18));
+  if (nextAsset) prompts.push(`${nextAsset.asset.name} is nearly affordable.`);
+  if (!getHighRollerAccess().access && getHighRollerAccess().score >= 1500) prompts.push('High Roller access is getting close.');
+  if (getPassiveIncomeReady() > 0) prompts.push('Penthouse income is ready.');
+  if (state.luxuryMarket.rareAssetId) prompts.push('Rare luxury listing appeared.');
   const node = document.querySelector('#retentionPrompts');
   if (node) {
     node.innerHTML = prompts.length ? prompts.slice(0, 3).map(prompt => `<span>${prompt}</span>`).join('') : '<span>The floor is steady. Play at your own pace.</span>';
@@ -409,6 +584,10 @@ export function renderProfile() {
     ['Username', state.username],
     ['Current VIP', `${tier.name} (${tier.badge})`],
     ['Prestige title', getPrestigeTitle()],
+    ['Net worth rank', getPrestigeStatus().rank],
+    ['Net worth', formatCredits(getNetWorth())],
+    ['Lifestyle level', getLifestyleLevel()],
+    ['High Roller score', getHighRollerAccess().score.toLocaleString()],
     ['Vault level', getState().vault.level],
     ['Total games played', state.stats.totalGamesPlayed],
     ['Total wagered', formatCredits(state.stats.totalWagered)],
@@ -428,13 +607,16 @@ export function renderProfile() {
   const showcase = document.querySelector('#profileShowcase');
   if (showcase) {
     const equipped = Object.values(state.cosmetics.equipped).map(id => COSMETICS.find(item => item.id === id)).filter(Boolean);
+    const assets = state.penthouse.equippedAssets.map(getLuxuryAsset).filter(Boolean);
     showcase.innerHTML = `
       <div class="profile-card-preview ${equipped.map(item => item.className).join(' ')}">
         <span class="badge">${tier.badge}</span>
         <h2>${state.username}</h2>
         <p>${getPrestigeTitle()} - ${favoriteGame()}</p>
+        <small>${getPrestigeStatus().rank} - ${formatCredits(getNetWorth())} net worth</small>
       </div>
       <div class="cosmetic-mini-list">${equipped.map(item => `<span>${item.name}</span>`).join('')}</div>
+      <div class="cosmetic-mini-list">${assets.map(item => `<span>${item.name}</span>`).join('') || '<span>No luxury showcase equipped</span>'}</div>
     `;
   }
 }
@@ -562,7 +744,96 @@ export function initSharedUi() {
 
     const modal = event.target.closest('[data-modal]');
     if (modal) openModal(modal.dataset.modal);
+
+    const buy = event.target.closest('[data-buy-asset]');
+    if (buy) {
+      try {
+        const asset = buyLuxuryAsset(buy.dataset.buyAsset);
+        toast(`${asset.name} added to your Penthouse`, 'win');
+        document.body.classList.add('luxury-pulse');
+        setTimeout(() => document.body.classList.remove('luxury-pulse'), 700);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const sell = event.target.closest('[data-sell-asset]');
+    if (sell) {
+      const asset = getLuxuryAsset(sell.dataset.sellAsset);
+      if (!confirm(`Sell ${asset?.name || 'this asset'} for partial virtual-credit value?`)) return;
+      try {
+        const value = sellLuxuryAsset(sell.dataset.sellAsset);
+        toast(`Asset sold: +${formatCredits(value)}`, 'win');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const equip = event.target.closest('[data-equip-asset]');
+    if (equip) {
+      try {
+        const asset = equipLuxuryAsset(equip.dataset.equipAsset);
+        toast(`${asset.name} equipped in your showcase`);
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const wish = event.target.closest('[data-wishlist-asset]');
+    if (wish) {
+      try {
+        const added = toggleWishlistAsset(wish.dataset.wishlistAsset);
+        toast(added ? 'Added to luxury wishlist' : 'Removed from wishlist');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const startBond = event.target.closest('[data-start-investment]');
+    if (startBond) {
+      try {
+        const amount = Number(document.querySelector('#investmentAmountInput')?.value || 0);
+        startInvestment(startBond.dataset.startInvestment, amount);
+        toast('Vault Investment started');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+      return;
+    }
+
+    const collectBond = event.target.closest('[data-collect-investment]');
+    if (collectBond) {
+      try {
+        const result = collectInvestment(collectBond.dataset.collectInvestment);
+        toast(`Investment collected: +${formatCredits(result.payout)}`, result.profit >= 0 ? 'win' : 'warning');
+      } catch (error) {
+        toast(error.message, 'warning');
+      }
+      renderAll();
+    }
   });
+
+  document.querySelector('#claimPenthouseIncomeBtn')?.addEventListener('click', () => {
+    try {
+      const amount = claimPenthouseIncome();
+      toast(`Penthouse income: +${formatCredits(amount)}`, 'win');
+    } catch (error) {
+      toast(error.message, 'warning');
+    }
+    renderAll();
+  });
+  document.querySelector('#assetCategoryFilter')?.addEventListener('change', renderPenthouse);
+  document.querySelector('#assetRarityFilter')?.addEventListener('change', renderPenthouse);
+  document.querySelector('#investmentAmountInput')?.addEventListener('input', renderInvestments);
 
   document.querySelector('#modalCloseBtn')?.addEventListener('click', closeModal);
   document.querySelector('#modalLayer')?.addEventListener('click', event => {
@@ -756,6 +1027,54 @@ function gameIcon(id) {
     baccarat: 'B',
     scratch: 'SC'
   }[id] || 'OC';
+}
+
+function assetCard(asset, options = {}) {
+  const value = getLuxuryAssetValue(asset.id);
+  const owned = !!options.owned;
+  const equipped = !!options.equipped;
+  const wished = !!options.wished;
+  return `
+    <article class="asset-card rarity-${asset.rarity.toLowerCase()} ${equipped ? 'is-equipped' : ''}">
+      <div class="asset-top">
+        <span class="asset-icon">${asset.category.split(' ').map(word => word[0]).join('').slice(0, 2)}</span>
+        <span class="status-pill">${asset.rarity}</span>
+      </div>
+      <h3>${asset.name}</h3>
+      <p>${asset.description}</p>
+      <div class="asset-metrics">
+        <span><strong>${formatCredits(value)}</strong><small>Market value ${marketTrend(asset.id)}</small></span>
+        <span><strong>${asset.prestige.toLocaleString()}</strong><small>Prestige</small></span>
+        <span><strong>${formatCredits(asset.income)}</strong><small>Hourly income</small></span>
+      </div>
+      ${options.compact ? '' : `<div class="game-actions">
+        ${owned ? `<button class="secondary small" data-equip-asset="${asset.id}" ${equipped ? 'disabled' : ''}>${equipped ? 'Showcased' : 'Showcase'}</button><button class="ghost small" data-sell-asset="${asset.id}">Sell</button>` : `<button class="primary small" data-buy-asset="${asset.id}">Buy</button>`}
+        <button class="ghost small" data-wishlist-asset="${asset.id}">${wished ? 'Wishlisted' : 'Wishlist'}</button>
+      </div>`}
+    </article>
+  `;
+}
+
+function marketTrend(assetId) {
+  const multiplier = Number(getState().luxuryMarket.multipliers?.[assetId] || 1);
+  const trend = multiplier > 1.04 ? 'up' : multiplier < 0.98 ? 'down' : 'flat';
+  const sign = trend === 'up' ? '+' : trend === 'down' ? '-' : '';
+  return `<span class="trend trend-${trend}">${sign}${Math.abs((multiplier - 1) * 100).toFixed(0)}%</span>`;
+}
+
+function durationLabel(ms) {
+  const hours = Math.round(ms / (60 * 60 * 1000));
+  if (hours < 24) return `${hours}h`;
+  return `${Math.round(hours / 24)}d`;
+}
+
+function timeUntil(dateText) {
+  const ms = Math.max(0, Date.parse(dateText) - Date.now());
+  const minutes = Math.ceil(ms / 60000);
+  if (minutes < 60) return `${minutes}m remaining`;
+  const hours = Math.ceil(minutes / 60);
+  if (hours < 24) return `${hours}h remaining`;
+  return `${Math.ceil(hours / 24)}d remaining`;
 }
 
 function text(selector, value) {

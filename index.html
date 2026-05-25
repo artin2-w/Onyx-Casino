@@ -22,10 +22,12 @@
           <small>Play-money lobby</small>
         </span>
       </button>
-      <button class="alpha-pill" data-modal="whats-new">Version 1 - The Live Casino</button>
+      <button class="alpha-pill" data-modal="whats-new">Version 2 - Luxury & Power</button>
 
       <nav class="nav-list">
         <button class="nav-btn is-active" data-view="lobby">Lobby</button>
+        <button class="nav-btn" data-view="penthouse">Penthouse</button>
+        <button class="nav-btn" data-view="highroller">High Roller</button>
         <button class="nav-btn" data-view="rewards">Rewards</button>
         <button class="nav-btn" data-view="vault">Vault</button>
         <button class="nav-btn" data-view="vip">VIP</button>
@@ -83,6 +85,16 @@
           <span class="label">Daily Streak</span>
           <strong id="streakText">0 days</strong>
         </div>
+        <div class="status-card">
+          <span class="label">Net Worth</span>
+          <strong id="netWorthText">0 credits</strong>
+          <small id="prestigeHeaderText">Lobby Regular</small>
+        </div>
+        <div class="status-card">
+          <span class="label">Onyx Notes</span>
+          <strong id="onyxNotesText">0 notes</strong>
+          <small>In-game prestige currency</small>
+        </div>
         <button id="howItWorksBtn" class="ghost">How It Works</button>
       </header>
 
@@ -113,7 +125,7 @@
             <div class="hero-actions">
               <button class="primary" data-open-game="slots">Play Featured Game</button>
               <button class="secondary" data-modal="rules-lobby">View Lobby Guide</button>
-              <button class="ghost" data-modal="whats-new">What's New in Version 1</button>
+              <button class="ghost" data-modal="whats-new">What's New in Version 2</button>
             </div>
           </div>
           <div class="hero-stage" aria-hidden="true">
@@ -204,6 +216,82 @@
         </section>
       </section>
 
+      <section id="view-penthouse" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Luxury Hub</p><h1>The Onyx Penthouse</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <section class="penthouse-hero panel">
+          <div>
+            <p class="eyebrow">Lifestyle Progression</p>
+            <h2 id="penthousePrestige">Lobby Regular</h2>
+            <p id="penthouseRank" class="muted">Starter Stack</p>
+          </div>
+          <div class="stats-grid">
+            <article class="stat"><span class="label">Net Worth</span><strong id="penthouseNetWorth">0 credits</strong></article>
+            <article class="stat"><span class="label">Lifestyle</span><strong id="penthouseLifestyle">Level 1</strong></article>
+            <article class="stat"><span class="label">Onyx Notes</span><strong id="penthouseNotes">0 Onyx Notes</strong></article>
+            <article class="stat"><span class="label">High Roller</span><strong id="penthouseHighRoller">Locked</strong></article>
+          </div>
+        </section>
+
+        <div class="dashboard-grid">
+          <section class="panel income-panel">
+            <div class="section-head compact"><div><p class="eyebrow">Passive Income</p><h2>Penthouse Income</h2></div></div>
+            <div class="stats-grid">
+              <article class="stat"><span class="label">Rate</span><strong id="penthouseIncomeRate">0 credits / hour</strong></article>
+              <article class="stat"><span class="label">Ready</span><strong id="penthouseIncomeReady">0 credits</strong></article>
+            </div>
+            <button id="claimPenthouseIncomeBtn" class="primary full">Collect Income</button>
+            <p class="muted">Passive income is browser-local and based only on fictional in-game luxury assets.</p>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Showcase</p><h2>Equipped Luxury</h2></div><span class="pill">3 slots</span></div>
+            <div id="assetShowcase" class="asset-grid showcase-grid"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Market</p><h2>Luxury Market</h2></div></div>
+            <div id="luxuryMarketPanel" class="luxury-market"></div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="section-head">
+            <div><p class="eyebrow">Asset Store</p><h2>Fictional Luxury Assets</h2></div>
+            <div class="history-filters">
+              <label>Category
+                <select id="assetCategoryFilter">
+                  <option value="all">All categories</option>
+                  <option>Watches</option>
+                  <option>Supercars</option>
+                  <option>Art Pieces</option>
+                  <option>Private Jet</option>
+                  <option>Casino Shares</option>
+                  <option>Luxury Furniture</option>
+                  <option>Rare Onyx Collectibles</option>
+                </select>
+              </label>
+              <label>Rarity
+                <select id="assetRarityFilter">
+                  <option value="all">All rarities</option>
+                  <option>Common</option>
+                  <option>Rare</option>
+                  <option>Epic</option>
+                  <option>Legendary</option>
+                  <option>Onyx</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div id="assetStore" class="asset-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head compact"><div><p class="eyebrow">Owned</p><h2>Luxury Collection</h2></div><span class="pill">Sell returns partial value</span></div>
+          <div id="ownedAssets" class="asset-grid"></div>
+        </section>
+      </section>
+
       <section id="view-rewards" class="view">
         <div class="game-header">
           <div><p class="eyebrow">Retention</p><h1>Reward Center</h1></div>
@@ -272,6 +360,56 @@
             <div id="vaultRecentRewards" class="activity-log"></div>
           </section>
         </div>
+        <section class="panel investment-panel">
+          <div class="section-head">
+            <div><p class="eyebrow">Vault Investments</p><h2>Credit Bonds</h2></div>
+            <span class="pill">Browser-local simulation</span>
+          </div>
+          <p class="muted">Lock virtual credits for simulated returns. These are fictional browser-local rewards only.</p>
+          <label>Credits to lock
+            <input id="investmentAmountInput" type="number" min="1000" step="100" value="1000" />
+          </label>
+          <div id="investmentOptions" class="investment-grid"></div>
+          <div class="dashboard-grid">
+            <section>
+              <h3>Active Investments</h3>
+              <div id="activeInvestments" class="activity-log"></div>
+            </section>
+            <section>
+              <h3>Collection History</h3>
+              <div id="investmentHistory" class="activity-log"></div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-highroller" class="view">
+        <div class="game-header">
+          <div><p class="eyebrow">Invitation Room</p><h1>High Roller World</h1></div>
+          <button class="ghost" data-view="lobby">Back to Lobby</button>
+        </div>
+        <section class="panel high-roller-hero">
+          <div class="high-roller-door" aria-hidden="true"><span></span></div>
+          <div>
+            <p class="eyebrow">Status Gate</p>
+            <h2 id="highRollerStatus">Invitation locked</h2>
+            <p class="muted">High Roller rooms reuse the existing game engines with premium table variants, stricter access, and richer progression fantasy.</p>
+            <div class="stats-grid">
+              <article class="stat"><span class="label">Score</span><strong id="highRollerScore">0</strong></article>
+              <article class="stat"><span class="label">Title</span><strong id="highRollerTitle">Lobby Regular</strong></article>
+            </div>
+          </div>
+        </section>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="section-head compact"><div><p class="eyebrow">Invitation</p><h2>Unlock Paths</h2></div></div>
+            <div id="highRollerRequirements" class="unlock-list"></div>
+          </section>
+          <section class="panel wide-panel">
+            <div class="section-head compact"><div><p class="eyebrow">Exclusive Tables</p><h2>Premium Variants</h2></div><span class="pill">Virtual credits only</span></div>
+            <div id="highRollerTables" class="high-table-grid"></div>
+          </section>
+        </div>
       </section>
 
       <section id="view-vip" class="view">
@@ -337,7 +475,7 @@
         <section class="panel alpha-panel">
           <div class="section-head compact">
             <div><p class="eyebrow">Public Alpha</p><h2>Known Limitations</h2></div>
-            <span class="pill">Version 1</span>
+            <span class="pill">Version 2</span>
           </div>
           <div class="known-grid">
             <article>All game math is simulated locally for entertainment.</article>
@@ -345,6 +483,7 @@
             <article>Sound uses lightweight generated tones, not final audio assets.</article>
             <article>Coming-soon lobby cards remain locked until future updates.</article>
             <article>Live players, events, and table signals are simulated atmosphere systems.</article>
+            <article>Luxury assets, Credit Bonds, Onyx Notes, and market states are fictional browser-local progression systems.</article>
           </div>
         </section>
       </section>
@@ -369,6 +508,11 @@
             <span class="help-icon icon-vip"></span>
             <h2>Balance and VIP</h2>
             <p>Playing games wagers credits, awards XP, and moves your VIP progress. Higher tiers improve simulated reward amounts and table limits.</p>
+          </section>
+          <section class="panel help-card">
+            <span class="help-icon icon-vip"></span>
+            <h2>Penthouse and status</h2>
+            <p>The Onyx Penthouse lets you buy fictional in-game assets, grow net worth, equip a showcase, and collect browser-local passive income.</p>
           </section>
           <section class="panel help-card">
             <span class="help-icon icon-mission"></span>
@@ -779,10 +923,10 @@
 
   <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
     <button data-view="lobby">Lobby</button>
+    <button data-view="penthouse">Penthouse</button>
+    <button data-view="highroller">High Roller</button>
     <button data-view="rewards">Rewards</button>
     <button data-view="vault">Vault</button>
-    <button data-view="vip">VIP</button>
-    <button data-view="help">Help</button>
     <button data-view="settings">Settings</button>
   </nav>
 

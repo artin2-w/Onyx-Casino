@@ -1,21 +1,22 @@
-# Onyx Casino Version 1: The Live Casino
+# Onyx Casino Version 2: Luxury & Power
 
-Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 1 turns the project into a living casino platform with atmosphere, simulated social activity, rotating events, Vault progression, cosmetics, profile identity, and daily return hooks.
+Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 2 turns virtual credits into a long-term lifestyle and status progression loop with the Onyx Penthouse, fictional luxury assets, Vault Investments, High Roller access, prestige titles, Onyx Notes, and a dynamic luxury market.
 
 ## Fake-Money Clarification
 
-Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, and cosmetics exist only inside the browser save. This project does not provide real-money gambling.
+Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, luxury assets, Onyx Notes, cosmetics, and market states exist only inside the browser save. This project does not provide real-money gambling.
 
-## Version 1 Highlights
+## Version 2 Highlights
 
-- Live Casino system with simulated online player count, activity ticker, table signals, hot game rotation, player names, and VIP rank moments
-- Tonight at Onyx event system with rotating events, countdowns, color palettes, featured games, XP boosts, Vault boosts, reward boosts, and event history
-- The Vault long-term progression system with Vault XP, keys, Daily/Elite/Mega crates, rarity tiers, reward reveal animation, duplicate protection, and cosmetic inventory
-- Cosmetic identity system with profile borders, chip skins, card backs, roulette themes, lobby themes, VIP-flavored prestige, and equipped visuals across the UI
-- Big win system with Mega/Massive/Legendary win states, glow overlays, coin rain, and reduced-motion respect
-- Retention prompts for near-level-up, mission completion, Vault progress, daily streak continuation, and comeback recovery rewards
-- Expanded profile with prestige title, Vault level, equipped cosmetics, favorite game, VIP status, lifetime stats, and badge showcase
-- Premium atmosphere pass with event-based ambience, animated particles, richer hierarchy, stronger mobile layout, and polished interaction states
+- The Onyx Penthouse luxury hub with net worth, lifestyle level, passive income, equipped showcase, asset store, owned collection, and market ticker
+- Fictional luxury asset economy with watches, supercars, art pieces, private jet, casino shares, furniture, and rare Onyx collectibles
+- Asset effects for passive credit income, VIP XP boosts, Vault XP boosts, daily reward boosts, prestige value, and High Roller access
+- Vault Investments with Safe Bond, Luxe Bond, High Roller Bond, and Black Vault Bond lock timers, projected returns, maturity collection, and local simulated risk
+- High Roller World with invitation-style access paths and premium table variants that reuse existing game engines
+- Prestige and status system with lifestyle level, net worth rank, High Roller score, and titles from Lobby Regular to Black Card Legend
+- Dynamic luxury market with daily/session states, hot assets, rare listings, market trend indicators, and ticker messages
+- Onyx Notes as a simple in-game-only prestige currency earned from major luxury and Vault milestones
+- Retention hooks for near-affordable assets, High Roller access, ready income, rare listings, daily streaks, and comeback rewards
 
 ## Playable Games
 
@@ -31,14 +32,16 @@ All playable games remain connected to the shared economy, XP, VIP tiers, missio
 
 ## Platform Sections
 
-- Lobby: live floor, Tonight at Onyx, game cards, missions, achievements, recent wins, and transactions
+- Lobby: live floor, Tonight at Onyx, game cards, missions, achievements, recent wins, transactions, and status prompts
+- Penthouse: luxury assets, equipped showcase, net worth, lifestyle level, passive income, Onyx Notes, and luxury market
+- High Roller: status gate, unlock requirements, and premium table variant cards
 - Rewards: daily calendar, missions, achievements, VIP rewards, promo-style local codes, and reward claims
-- Vault: crates, keys, Vault XP, cosmetic inventory, recent reveals, and equip controls
+- Vault: crates, keys, Vault XP, cosmetic inventory, recent reveals, and Vault Investments
 - VIP: tier progress, benefits, max bet unlocks, and next-tier preview
-- Profile: username, prestige title, cosmetic profile card, favorite game, Vault level, VIP status, and lifetime stats
+- Profile: username, prestige title, net worth rank, lifestyle level, equipped cosmetics, luxury showcase, favorite game, and lifetime stats
 - History: transaction analytics and filters
 - Settings: username, sound, reduced animations, compact mode, save export/import, history clearing, reset, and known limitations
-- Help: simulator explanation, balance/VIP/missions/game guidance, and localStorage troubleshooting
+- Help: simulator explanation, balance/VIP/missions/game guidance, Penthouse guidance, and localStorage troubleshooting
 
 ## How to Run Locally
 
@@ -66,11 +69,15 @@ npx serve .
 - v0.5: Onboarding, daily calendar, Reward Center, VIP Club, History, Settings, import/export, and app shell polish
 - v0.6: Visual identity overhaul, CSS-only brand assets, Help Center, public alpha labeling, sound manager, accessibility pass, and release notes
 - Version 1: Live Casino systems, Tonight at Onyx, The Vault, cosmetics, prestige identity, big-win effects, atmosphere, retention prompts, and platform polish
+- Version 2: Luxury assets, Onyx Penthouse, Vault Investments, High Roller World, prestige status, Onyx Notes, luxury market, and wealth progression
 
 ## Known Limitations
 
 - Live players, table activity, hot games, and events are simulated ambience systems.
-- Vault rewards and cosmetics are local browser-save collectibles.
+- Luxury assets, market values, Onyx Notes, and Vault Investments are local browser-save progression systems.
+- Vault Investments use browser time and light local guards; they are not server-authoritative.
+- High Roller variants currently reuse existing game engines with premium labels and access gates.
+- Onyx Notes are earned and displayed; a deeper rare shop is prepared for a future update.
 - Plinko uses a visualized path rather than a physics engine.
 - Crash rounds are tuned for short browser sessions.
 - Sound effects use lightweight generated tones.
@@ -79,9 +86,9 @@ npx serve .
 
 ## Roadmap Preview
 
-- Version 2 live host-style lobby moments and richer event scripting
-- More playable games and deeper table variants
-- More Vault collectible sets and cosmetic previews
-- Optional authored audio assets behind the existing sound manager
-- Enhanced keyboard shortcuts and accessibility announcements per game
+- Version 3: The House Edge with deeper table variants, configurable simulator math, and richer risk education
+- Rare Onyx Notes shop for prestige cosmetics and limited luxury listings
+- More Penthouse upgrade tiers and visual room states
+- More High Roller table variant rules without duplicating core game engines
+- Expanded market events and authored Tonight at Onyx luxury event scripting
 - Wider mobile browser QA before a broader beta

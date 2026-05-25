@@ -1,5 +1,5 @@
-const SAVE_KEY = 'onyxCasinoSaveV1';
-const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV6', 'onyxCasinoSaveV5', 'onyxCasinoSaveV4', 'onyxCasinoSaveV3', 'onyxCasinoSaveV2'];
+const SAVE_KEY = 'onyxCasinoSaveV2';
+const LEGACY_SAVE_KEYS = ['onyxCasinoSaveV1', 'onyxCasinoSaveV6', 'onyxCasinoSaveV5', 'onyxCasinoSaveV4', 'onyxCasinoSaveV3', 'onyxCasinoSaveV2'];
 
 export const PLAYABLE_GAMES = ['slots', 'roulette', 'blackjack', 'dice', 'mines', 'crash', 'plinko'];
 export const CHIP_VALUES = [10, 25, 50, 100, 250, 500, 1000];
@@ -71,6 +71,54 @@ export const COSMETICS = [
   { id: 'lobby-vip', name: 'VIP Obsidian', type: 'lobbyTheme', rarity: 'Legendary', className: 'theme-vip' }
 ];
 
+export const LUXURY_ASSETS = [
+  { id: 'obsidian-chronograph', name: 'Obsidian Chronograph', category: 'Watches', price: 4500, rarity: 'Common', prestige: 120, income: 18, vipBoost: 0.01, vaultBoost: 0.01, description: 'A black-gold timepiece worn by rising Onyx regulars.' },
+  { id: 'velvet-suite-sofa', name: 'Velvet Suite Sofa', category: 'Luxury Furniture', price: 7200, rarity: 'Common', prestige: 160, income: 28, dailyBoost: 0.01, description: 'Deep red lounge seating for a more serious penthouse floor.' },
+  { id: 'crimson-gt', name: 'Crimson GT', category: 'Supercars', price: 18500, rarity: 'Rare', prestige: 420, income: 82, vipBoost: 0.025, description: 'A fictional grand tourer with a red lacquer finish and gold trim.' },
+  { id: 'aurelia-coupe', name: 'Aurelia Coupe', category: 'Supercars', price: 34000, rarity: 'Epic', prestige: 760, income: 145, vaultBoost: 0.035, description: 'A low, luminous coupe built for the Onyx valet circle.' },
+  { id: 'black-diamond-sculpture', name: 'Black Diamond Sculpture', category: 'Art Pieces', price: 52000, rarity: 'Epic', prestige: 980, income: 205, vaultBoost: 0.045, description: 'A faceted centerpiece that catches every neon edge.' },
+  { id: 'onyx-house-shares', name: 'Onyx House Shares', category: 'Casino Shares', price: 88000, rarity: 'Legendary', prestige: 1650, income: 420, dailyBoost: 0.04, highRollerAccess: true, description: 'Fictional in-game shares in the simulated Onyx house.' },
+  { id: 'nightfall-jet', name: 'Nightfall Jet', category: 'Private Jet', price: 145000, rarity: 'Legendary', prestige: 2500, income: 680, vipBoost: 0.06, highRollerAccess: true, description: 'A private jet silhouette for the black-card lifestyle fantasy.' },
+  { id: 'rare-onyx-monolith', name: 'Rare Onyx Monolith', category: 'Rare Onyx Collectibles', price: 240000, rarity: 'Onyx', prestige: 4200, income: 1050, vaultBoost: 0.09, dailyBoost: 0.06, highRollerAccess: true, description: 'A mythic collectible displayed only in the top penthouse tier.' }
+];
+
+export const INVESTMENT_OPTIONS = {
+  safe: { label: 'Safe Bond', durationMs: 60 * 60 * 1000, min: 1000, returnRate: 0.03, risk: 0, xp: 35 },
+  luxe: { label: 'Luxe Bond', durationMs: 6 * 60 * 60 * 1000, min: 5000, returnRate: 0.09, risk: 0.04, xp: 110 },
+  highRoller: { label: 'High Roller Bond', durationMs: 24 * 60 * 60 * 1000, min: 15000, returnRate: 0.22, risk: 0.11, xp: 260 },
+  blackVault: { label: 'Black Vault Bond', durationMs: 3 * 24 * 60 * 60 * 1000, min: 50000, returnRate: 0.45, risk: 0.22, xp: 700 }
+};
+
+export const MARKET_STATES = ['Stable', 'Rising', 'Cooling', 'Rare Demand', 'VIP Frenzy'];
+
+const defaultPenthouse = () => ({
+  ownedAssets: [],
+  equippedAssets: [],
+  wishlist: [],
+  lastIncomeClaimAt: null,
+  incomeReadyAt: null,
+  lifetimeIncome: 0
+});
+
+const defaultInvestments = () => ({
+  active: [],
+  history: []
+});
+
+const defaultLuxuryMarket = () => ({
+  state: 'Stable',
+  hotAssetId: 'obsidian-chronograph',
+  rareAssetId: 'black-diamond-sculpture',
+  multipliers: {},
+  updatedAt: null,
+  ticker: []
+});
+
+const defaultOnyxNotes = () => ({
+  balance: 0,
+  history: []
+});
+
 const defaultLiveCasino = () => ({
   onlinePlayers: 145,
   hotGame: 'crash',
@@ -126,7 +174,7 @@ const defaultSessions = () => Object.fromEntries(PLAYABLE_GAMES.map(game => [gam
 const defaultAchievements = () => Object.fromEntries(ACHIEVEMENTS.map(item => [item.id, { unlocked: false, unlockedAt: null }]));
 
 export const defaultState = {
-  version: 1,
+  version: 2,
   username: 'Guest Player',
   balance: 0,
   level: 1,
@@ -151,6 +199,14 @@ export const defaultState = {
   tonightAtOnyx: defaultTonightAtOnyx(),
   vault: defaultVault(),
   cosmetics: defaultCosmetics(),
+  penthouse: defaultPenthouse(),
+  investments: defaultInvestments(),
+  luxuryMarket: defaultLuxuryMarket(),
+  onyxNotes: defaultOnyxNotes(),
+  highRoller: {
+    invited: false,
+    lastViewedAt: null
+  },
   retention: {
     comebackClaimedDate: null,
     lastPromptAt: null,
@@ -205,6 +261,7 @@ export function loadState() {
 export function getState() { return state; }
 export function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
 export function saveState() {
+  if (state.highRoller && getHighRollerAccess().access) state.highRoller.invited = true;
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   listeners.forEach(listener => listener(state));
 }
@@ -387,17 +444,18 @@ export function claimDailyBonus() {
   const reward = getDailyRewardForStreak(state.dailyStreak);
   const tier = getVipTier();
   const amount = Math.floor(reward.credits * tierRewardMultiplier());
+  const boostedAmount = Math.floor(amount * (1 + getAssetBoosts().daily));
   const xp = Math.floor(reward.xp * tierRewardMultiplier());
-  state.balance += amount;
+  state.balance += boostedAmount;
   addXP(xp, false);
   updateMissionProgress('dailyBonus', 1);
-  state.transactions.unshift({ id: id(), game: 'Rewards', bet: 0, result: `Daily Day ${reward.day}`, profit: amount, detail: `${tier.name} daily calendar reward`, time: timeNow() });
+  state.transactions.unshift({ id: id(), game: 'Rewards', bet: 0, result: `Daily Day ${reward.day}`, profit: boostedAmount, detail: `${tier.name} daily calendar reward`, time: timeNow() });
   state.transactions = state.transactions.slice(0, 24);
-  addRewardClaim(`Daily Day ${reward.day}`, amount, xp, `${tier.name} multiplier`);
+  addRewardClaim(`Daily Day ${reward.day}`, boostedAmount, xp, `${tier.name} multiplier`);
   addVaultCrate('daily', 1, false);
-  emitSoundHook('bonus-claim', { amount });
+  emitSoundHook('bonus-claim', { amount: boostedAmount });
   saveState();
-  return amount;
+  return boostedAmount;
 }
 
 export function claimPromoCode(code) {
@@ -550,6 +608,143 @@ export function claimComebackBonus() {
   return Math.floor(amount);
 }
 
+export function buyLuxuryAsset(assetId) {
+  const asset = getLuxuryAsset(assetId);
+  if (!asset) throw new Error('Luxury asset not found');
+  if (state.penthouse.ownedAssets.includes(asset.id)) throw new Error('Asset already owned');
+  const price = getLuxuryAssetValue(asset.id);
+  if (state.balance < price) throw new Error(`Not enough credits. Need ${formatCredits(price)}`);
+  state.balance -= price;
+  state.penthouse.ownedAssets.push(asset.id);
+  if (state.penthouse.equippedAssets.length < 3) state.penthouse.equippedAssets.push(asset.id);
+  state.transactions.unshift({ id: id(), game: 'Penthouse', bet: price, result: 'Asset Purchase', profit: -price, detail: asset.name, time: timeNow() });
+  addXP(Math.floor(asset.prestige / 10), false);
+  addVaultProgress(Math.floor(asset.prestige / 8), false);
+  awardOnyxNotes(Math.max(1, Math.floor(asset.prestige / 500)), `Purchased ${asset.name}`, false);
+  saveState();
+  return asset;
+}
+
+export function sellLuxuryAsset(assetId) {
+  const asset = getLuxuryAsset(assetId);
+  if (!asset || !state.penthouse.ownedAssets.includes(asset.id)) throw new Error('Asset is not owned');
+  const value = Math.floor(getLuxuryAssetValue(asset.id) * 0.65);
+  state.penthouse.ownedAssets = state.penthouse.ownedAssets.filter(idToKeep => idToKeep !== asset.id);
+  state.penthouse.equippedAssets = state.penthouse.equippedAssets.filter(idToKeep => idToKeep !== asset.id);
+  state.balance += value;
+  state.transactions.unshift({ id: id(), game: 'Penthouse', bet: 0, result: 'Asset Sale', profit: value, detail: asset.name, time: timeNow() });
+  saveState();
+  return value;
+}
+
+export function equipLuxuryAsset(assetId) {
+  const asset = getLuxuryAsset(assetId);
+  if (!asset || !state.penthouse.ownedAssets.includes(asset.id)) throw new Error('Asset is not owned');
+  state.penthouse.equippedAssets = [asset.id, ...state.penthouse.equippedAssets.filter(idToKeep => idToKeep !== asset.id)].slice(0, 3);
+  saveState();
+  return asset;
+}
+
+export function toggleWishlistAsset(assetId) {
+  if (!getLuxuryAsset(assetId)) throw new Error('Luxury asset not found');
+  const exists = state.penthouse.wishlist.includes(assetId);
+  state.penthouse.wishlist = exists
+    ? state.penthouse.wishlist.filter(idToKeep => idToKeep !== assetId)
+    : [...state.penthouse.wishlist, assetId].slice(0, 10);
+  saveState();
+  return !exists;
+}
+
+export function claimPenthouseIncome() {
+  const ready = getPassiveIncomeReady();
+  if (ready <= 0) throw new Error('Penthouse income is not ready yet');
+  state.balance += ready;
+  state.penthouse.lifetimeIncome += ready;
+  state.penthouse.lastIncomeClaimAt = new Date().toISOString();
+  state.penthouse.incomeReadyAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+  state.transactions.unshift({ id: id(), game: 'Penthouse', bet: 0, result: 'Income Claimed', profit: ready, detail: 'Luxury asset income', time: timeNow() });
+  addRewardClaim('Penthouse Income', ready, 0, 'Hourly lifestyle income');
+  saveState();
+  return ready;
+}
+
+export function startInvestment(optionId, amount) {
+  const option = INVESTMENT_OPTIONS[optionId];
+  const principal = safeNumber(amount, 0);
+  if (!option) throw new Error('Vault Investment not found');
+  if (principal < option.min) throw new Error(`Minimum is ${formatCredits(option.min)}`);
+  if (state.balance < principal) throw new Error(`Not enough credits. Balance: ${formatCredits(state.balance)}`);
+  state.balance -= principal;
+  const investment = {
+    id: id(),
+    optionId,
+    principal,
+    startedAt: new Date().toISOString(),
+    unlocksAt: new Date(Date.now() + option.durationMs).toISOString(),
+    collected: false
+  };
+  state.investments.active.unshift(investment);
+  state.transactions.unshift({ id: id(), game: 'Vault Investment', bet: principal, result: option.label, profit: -principal, detail: 'Credits locked in browser-local bond', time: timeNow() });
+  saveState();
+  return investment;
+}
+
+export function collectInvestment(investmentId) {
+  const investment = state.investments.active.find(item => item.id === investmentId);
+  if (!investment) throw new Error('Investment not found');
+  if (Date.parse(investment.unlocksAt) > Date.now()) throw new Error('Investment has not matured yet');
+  const option = INVESTMENT_OPTIONS[investment.optionId];
+  const riskHit = option.risk > 0 && seededRisk(investment.id) < option.risk;
+  const profit = riskHit ? -Math.floor(investment.principal * option.returnRate * 0.35) : Math.floor(investment.principal * option.returnRate);
+  const payout = Math.max(0, investment.principal + profit);
+  state.balance += payout;
+  addXP(option.xp, false);
+  addVaultProgress(Math.floor(option.xp * 1.4), false);
+  awardOnyxNotes(Math.max(1, Math.floor(option.xp / 180)), `${option.label} matured`, false);
+  state.investments.active = state.investments.active.filter(item => item.id !== investment.id);
+  state.investments.history.unshift({ ...investment, payout, profit, riskHit, collectedAt: new Date().toISOString() });
+  state.investments.history = state.investments.history.slice(0, 20);
+  state.transactions.unshift({ id: id(), game: 'Vault Investment', bet: 0, result: riskHit ? 'Risk Adjusted' : 'Matured', profit: payout, detail: option.label, time: timeNow() });
+  saveState();
+  return { payout, profit, riskHit };
+}
+
+export function refreshLuxuryMarket(force = false) {
+  const today = dateKey(new Date());
+  if (!force && state.luxuryMarket.updatedAt === today) return state.luxuryMarket;
+  const marketState = pick(MARKET_STATES);
+  const hot = pick(LUXURY_ASSETS);
+  const rare = pick(LUXURY_ASSETS.filter(asset => asset.rarity === 'Epic' || asset.rarity === 'Legendary' || asset.rarity === 'Onyx'));
+  const base = { Stable: 1, Rising: 1.08, Cooling: 0.94, 'Rare Demand': 1.12, 'VIP Frenzy': 1.18 }[marketState] || 1;
+  state.luxuryMarket = {
+    state: marketState,
+    hotAssetId: hot.id,
+    rareAssetId: rare.id,
+    updatedAt: today,
+    multipliers: Object.fromEntries(LUXURY_ASSETS.map(asset => {
+      const modifier = asset.id === hot.id ? 1.12 : asset.id === rare.id ? 1.22 : 0.96 + Math.random() * 0.12;
+      return [asset.id, Number((base * modifier).toFixed(2))];
+    })),
+    ticker: [
+      `${marketState} market opened for luxury assets`,
+      `${hot.name} is drawing attention`,
+      `${rare.name} appeared as a rare listing`
+    ]
+  };
+  saveState();
+  return state.luxuryMarket;
+}
+
+export function awardOnyxNotes(amount, detail = 'Onyx Notes reward', shouldSave = true) {
+  const notes = Math.max(0, Math.floor(Number(amount) || 0));
+  if (!notes) return 0;
+  state.onyxNotes.balance += notes;
+  state.onyxNotes.history.unshift({ amount: notes, detail, time: timeNow() });
+  state.onyxNotes.history = state.onyxNotes.history.slice(0, 20);
+  if (shouldSave) saveState();
+  return notes;
+}
+
 export function updateMissionProgress(id, amount) {
   if (!state.missions[id] || state.missions[id].claimed) return;
   state.missions[id].progress += Math.max(0, Math.floor(Number(amount) || 0));
@@ -636,19 +831,73 @@ export function getVaultProgress() {
   return { level: state.vault.level, xp: state.vault.xp, needed, percent: Math.max(0, Math.min(100, (state.vault.xp / needed) * 100)) };
 }
 export function getPrestigeTitle() {
-  if (getVipTier().name === 'Onyx' || state.vault.level >= 40) return 'Onyx Legend';
-  if (getVipTier().name === 'Platinum' || getVipTier().name === 'Gold') return 'VIP Elite';
-  if (state.vault.level >= 15) return 'Vault Hunter';
-  if (state.stats.biggestWin >= 5000) return 'High Roller';
-  return 'Rookie';
+  return getPrestigeStatus().title;
+}
+export function getLifestyleLevel() {
+  return Math.max(1, Math.floor((getNetWorth() + getPrestigeValue()) / 18000) + 1);
+}
+export function getNetWorth() {
+  return state.balance + state.penthouse.ownedAssets.reduce((sum, assetId) => sum + getLuxuryAssetValue(assetId), 0);
+}
+export function getPrestigeValue() {
+  return state.penthouse.ownedAssets.reduce((sum, assetId) => sum + (getLuxuryAsset(assetId)?.prestige || 0), 0);
+}
+export function getPassiveIncomePerHour() {
+  return state.penthouse.ownedAssets.reduce((sum, assetId) => sum + (getLuxuryAsset(assetId)?.income || 0), 0);
+}
+export function getPassiveIncomeReady() {
+  if (!state.penthouse.lastIncomeClaimAt) return getPassiveIncomePerHour();
+  const elapsedHours = Math.min(24, Math.max(0, (Date.now() - Date.parse(state.penthouse.lastIncomeClaimAt)) / (60 * 60 * 1000)));
+  return Math.floor(getPassiveIncomePerHour() * elapsedHours);
+}
+export function getLuxuryAsset(assetId) { return LUXURY_ASSETS.find(asset => asset.id === assetId); }
+export function getLuxuryAssetValue(assetId) {
+  const asset = getLuxuryAsset(assetId);
+  if (!asset) return 0;
+  return Math.max(1, Math.floor(asset.price * Number(state.luxuryMarket.multipliers?.[asset.id] || 1)));
+}
+export function getAssetBoosts() {
+  return state.penthouse.ownedAssets.reduce((boosts, assetId) => {
+    const asset = getLuxuryAsset(assetId);
+    if (!asset) return boosts;
+    boosts.vip += asset.vipBoost || 0;
+    boosts.vault += asset.vaultBoost || 0;
+    boosts.daily += asset.dailyBoost || 0;
+    return boosts;
+  }, { vip: 0, vault: 0, daily: 0 });
+}
+export function getPrestigeStatus() {
+  const score = getHighRollerScore();
+  const title = score >= 18000 ? 'Black Card Legend'
+    : score >= 11000 ? 'Onyx Magnate'
+    : score >= 7200 ? 'Vault Aristocrat'
+    : score >= 4200 ? 'Penthouse Owner'
+    : score >= 2200 ? 'Rising High Roller'
+    : score >= 900 ? 'Velvet Guest'
+    : 'Lobby Regular';
+  const rank = getNetWorth() >= 250000 ? 'Obsidian Fortune'
+    : getNetWorth() >= 100000 ? 'Penthouse Wealth'
+    : getNetWorth() >= 35000 ? 'Luxury Builder'
+    : 'Starter Stack';
+  return { title, rank, score };
+}
+export function getHighRollerScore() {
+  const achievementCount = Object.values(state.achievements).filter(item => item.unlocked).length;
+  return Math.floor(getPrestigeValue() + getNetWorth() / 20 + state.vault.level * 95 + state.stats.totalWagered / 120 + state.stats.biggestWin / 4 + achievementCount * 160);
+}
+export function getHighRollerAccess() {
+  const hasShare = state.penthouse.ownedAssets.some(assetId => getLuxuryAsset(assetId)?.highRollerAccess);
+  const lifestyle = getLifestyleLevel();
+  const access = getVipTier().name !== 'Bronze' || lifestyle >= 4 || getNetWorth() >= 50000 || state.vault.level >= 8 || hasShare;
+  return { access, hasShare, lifestyle, score: getHighRollerScore() };
 }
 export function getCosmetic(idToFind) { return COSMETICS.find(item => item.id === idToFind); }
 export function getEquippedCosmetic(type) { return getCosmetic(state.cosmetics.equipped[type]); }
 export function getEventXpMultiplier() {
-  return Number(state.tonightAtOnyx?.xpMultiplier || 1);
+  return Number(state.tonightAtOnyx?.xpMultiplier || 1) + getAssetBoosts().vip;
 }
 export function getEventVaultMultiplier() {
-  return Number(state.tonightAtOnyx?.vaultMultiplier || 1);
+  return Number(state.tonightAtOnyx?.vaultMultiplier || 1) + getAssetBoosts().vault;
 }
 export function getGameSession(game) { return ensureGameSession(game); }
 export function gameLabel(game) {
@@ -686,7 +935,7 @@ function ensureGameSession(game) {
 }
 function sanitizeState(nextState) {
   const incomingVersion = safeNumber(nextState.version, 1);
-  nextState.version = 1;
+  nextState.version = 2;
   nextState.balance = safeNumber(nextState.balance, 10000);
   nextState.level = Math.max(1, safeNumber(nextState.level, 1));
   nextState.xp = safeNumber(nextState.xp, 0);
@@ -702,6 +951,18 @@ function sanitizeState(nextState) {
   nextState.vault.inventory = Array.from(new Set(Array.isArray(nextState.vault.inventory) ? nextState.vault.inventory : defaultVault().inventory));
   nextState.vault.recentRewards = Array.isArray(nextState.vault.recentRewards) ? nextState.vault.recentRewards.slice(0, 12) : [];
   nextState.cosmetics = mergeDeep(defaultCosmetics(), nextState.cosmetics || {});
+  nextState.penthouse = mergeDeep(defaultPenthouse(), nextState.penthouse || {});
+  nextState.penthouse.ownedAssets = Array.from(new Set(Array.isArray(nextState.penthouse.ownedAssets) ? nextState.penthouse.ownedAssets.filter(getLuxuryAsset) : []));
+  nextState.penthouse.equippedAssets = Array.from(new Set(Array.isArray(nextState.penthouse.equippedAssets) ? nextState.penthouse.equippedAssets.filter(id => nextState.penthouse.ownedAssets.includes(id)) : [])).slice(0, 3);
+  nextState.penthouse.wishlist = Array.from(new Set(Array.isArray(nextState.penthouse.wishlist) ? nextState.penthouse.wishlist.filter(getLuxuryAsset) : [])).slice(0, 10);
+  nextState.investments = mergeDeep(defaultInvestments(), nextState.investments || {});
+  nextState.investments.active = sanitizeInvestments(nextState.investments.active);
+  nextState.investments.history = Array.isArray(nextState.investments.history) ? nextState.investments.history.slice(0, 20) : [];
+  nextState.luxuryMarket = mergeDeep(defaultLuxuryMarket(), nextState.luxuryMarket || {});
+  nextState.onyxNotes = mergeDeep(defaultOnyxNotes(), nextState.onyxNotes || {});
+  nextState.onyxNotes.balance = safeNumber(nextState.onyxNotes.balance, 0);
+  nextState.onyxNotes.history = Array.isArray(nextState.onyxNotes.history) ? nextState.onyxNotes.history.slice(0, 20) : [];
+  nextState.highRoller = mergeDeep(structuredClone(defaultState.highRoller), nextState.highRoller || {});
   nextState.retention = mergeDeep(structuredClone(defaultState.retention), nextState.retention || {});
   nextState.promoCodes = nextState.promoCodes && typeof nextState.promoCodes === 'object' ? nextState.promoCodes : {};
   nextState.stats = mergeDeep(structuredClone(defaultState.stats), nextState.stats || {});
@@ -744,6 +1005,16 @@ function sanitizeRewardClaims(items) {
     time: String(item?.time || timeNow()).slice(0, 20)
   })) : [];
 }
+function sanitizeInvestments(items) {
+  return Array.isArray(items) ? items.slice(0, 12).map(item => ({
+    id: String(item?.id || id()),
+    optionId: INVESTMENT_OPTIONS[item?.optionId] ? item.optionId : 'safe',
+    principal: safeNumber(item?.principal, 0),
+    startedAt: String(item?.startedAt || new Date().toISOString()),
+    unlocksAt: String(item?.unlocksAt || new Date().toISOString()),
+    collected: !!item?.collected
+  })).filter(item => item.principal > 0) : [];
+}
 function chooseVaultReward(crateType) {
   const rarityRolls = {
     daily: [['Common', 50], ['Rare', 30], ['Epic', 15], ['Legendary', 4], ['Onyx', 1]],
@@ -765,6 +1036,11 @@ function weightedPick(entries) {
   return entries[0][0];
 }
 function pick(items) { return items[Math.floor(Math.random() * items.length)]; }
+function seededRisk(seed) {
+  let hash = 0;
+  for (const char of String(seed)) hash = (hash * 31 + char.charCodeAt(0)) % 100000;
+  return (hash % 1000) / 1000;
+}
 function emitBigWinHook(game, profit, wager) {
   if (profit < 1000 && profit < wager * 6) return;
   const tier = profit >= 10000 || profit >= wager * 25 ? 'legendary'
