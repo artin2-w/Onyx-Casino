@@ -36,6 +36,13 @@ import { initJuice } from './juice.js';
 import { initShowroom } from './showroom.js';
 import { initControlRoom } from './controlRoom.js';
 import { initVaultRoom } from './vaultRoom.js';
+import { initTitleScreen } from './titleScreen.js';
+import { initRoomSystem } from './roomSystem.js';
+import { initGameHud } from './gameHud.js';
+import { initPauseMenu } from './pauseMenu.js';
+import { initObjectives } from './objectives.js';
+import { initTableExperience } from './tableExperience.js';
+import { initGamePresentation } from './gamePresentation.js';
 
 loadState();
 initSharedUi();
@@ -65,6 +72,12 @@ initJuice();
 initShowroom();
 initControlRoom();
 initVaultRoom();
+initRoomSystem();
+initGameHud();
+initPauseMenu({ setView });
+initObjectives();
+initTableExperience({ setView });
+initGamePresentation();
 initFloorHud();
 initCasinoFloor({ setView, toast });
 initLivingCasinoFloor();
@@ -79,7 +92,7 @@ initPlinko();
 subscribe(() => renderAll());
 renderAll();
 setView('lobby');
-if (!getState().onboardingComplete) showOnboarding();
+initTitleScreen({ setView, showOnboarding, renderAll });
 
 function initNavigation() {
   document.body.addEventListener('click', event => {

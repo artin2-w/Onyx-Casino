@@ -21,6 +21,51 @@
     <strong>Fake-money simulator.</strong> Virtual credits only. No real-money gambling.
   </div>
 
+  <section id="titleScreen" class="title-screen is-visible" aria-label="Onyx Casino title screen">
+    <div class="title-bg" aria-hidden="true">
+      <span class="title-door left"></span>
+      <span class="title-door right"></span>
+      <span class="title-light"></span>
+      <span class="title-particles"></span>
+    </div>
+    <div class="title-card">
+      <span class="onyx-logo-mark title-logo" aria-hidden="true"></span>
+      <p class="eyebrow">Virtual credits casino world</p>
+      <h1>ONYX CASINO</h1>
+      <p>The Playable World</p>
+      <div class="title-actions">
+        <button id="enterCasinoBtn" class="primary">Enter Casino</button>
+        <button id="continueGameBtn" class="secondary">Continue</button>
+        <button id="newGameBtn" class="ghost">New Game</button>
+        <button id="titleSettingsBtn" class="ghost">Settings</button>
+      </div>
+      <small>Virtual credits only. No real-money gambling.</small>
+    </div>
+  </section>
+
+  <div id="entranceIntro" class="entrance-intro" aria-hidden="true">
+    <span class="intro-door left"></span>
+    <span class="intro-door right"></span>
+    <strong>Welcome to Onyx</strong>
+  </div>
+
+  <div id="roomSplash" class="room-splash" aria-live="polite" aria-hidden="true">
+    <div><span data-room-subtitle>Entering</span><strong data-room-title>Onyx Casino</strong></div>
+  </div>
+
+  <div id="gameHud" class="game-hud" aria-label="Game status HUD">
+    <div class="hud-chip"><span>Credits</span><strong data-hud-credits>0 credits</strong></div>
+    <div class="hud-badge"><span>VIP</span><strong data-hud-vip>Bronze</strong></div>
+    <div class="hud-location"><span data-hud-location>Title Screen</span><small data-hud-title>Lobby Regular</small></div>
+    <button id="pauseBtn" class="hud-menu" aria-label="Open pause menu">Menu</button>
+  </div>
+
+  <aside id="objectiveTracker" class="objective-tracker" aria-label="Current objectives">
+    <span>Main Objective</span>
+    <strong data-objective-title>Enter the Casino</strong>
+    <small data-objective-detail>Start your first Onyx session.</small>
+  </aside>
+
   <div class="app-shell">
     <aside class="sidebar" aria-label="Main navigation">
       <button class="brand" data-view="floor" aria-label="Enter Onyx Casino floor">
@@ -1187,6 +1232,24 @@
       <p data-big-win-game>Onyx Casino</p>
     </div>
   </div>
+
+  <section id="pauseMenu" class="pause-menu" aria-hidden="true">
+    <div class="pause-card" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+      <p class="eyebrow">Game Menu</p>
+      <h2 id="pauseTitle">Paused</h2>
+      <div class="pause-actions">
+        <button id="resumeBtn" class="primary">Resume</button>
+        <button class="secondary" data-view="profile">Profile</button>
+        <button class="secondary" data-view="rewards">Rewards</button>
+        <button class="secondary" data-view="settings">Settings</button>
+        <button id="pauseExportBtn" class="ghost">Export Save</button>
+        <button class="ghost" data-view="help">Help</button>
+        <button id="returnTitleBtn" class="ghost">Return to Title</button>
+      </div>
+      <textarea id="pauseSaveBox" readonly placeholder="Exported save JSON appears here."></textarea>
+      <small>Virtual credits only. No real-money gambling.</small>
+    </div>
+  </section>
 
   <nav class="immersive-nav" aria-label="Game navigation">
     <button data-view="lobby" class="is-active"><span>Hub</span></button>
