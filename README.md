@@ -1,27 +1,26 @@
-# Onyx Casino Version 3: The House Edge
+# Onyx Casino Version 4: The Immersive Lobby
 
-Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 3 transforms the player from casino guest into a fictional casino power player with operations management, table ownership, staff, NPC traffic, surveillance decisions, simulator edge tools, and subtle Onyx lore.
+Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 4 is a presentation and immersion overhaul: the app now opens as a cinematic casino hub with floating game-style navigation, scene-based destinations, ambient world layers, and stronger luxury casino identity.
 
 ## Fake-Money Clarification
 
-Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, luxury assets, Onyx Notes, table licenses, staff, management rank, lore files, and operations events exist only inside the browser save. This project does not provide real-money gambling.
+Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, luxury assets, Onyx Notes, table licenses, staff, management rank, lore files, and events exist only inside the browser save. This project does not provide real-money gambling.
 
-## Version 3 Highlights
+## Version 4 Highlights
 
-- The House Edge hub with locked/unlocked executive access, operations dashboard, reputation, house income, NPC traffic, staff morale, table heat, and security risk
-- Fictional table ownership with Blackjack Table, Roulette Table, Slots Terminal, Crash Terminal, Plinko Board, Mines Room, and Dice Lounge licenses
-- Staff system with dealers, floor managers, security analysts, VIP hosts, technicians, traits, salary cycles, morale, training, and table assignments
-- Simulated NPC traffic with tourists, regulars, high rollers, VIP whales, suspicious players, streamers, and night guests
-- Surveillance Hub with CCTV-style alert cards and game-like incident decisions
-- Edge Tools that provide simulator-only probability hints without guarantees or real-world advantage guidance
-- Operations Events with management choices that affect local reputation, income, risk, morale, Onyx Notes, and Vault XP
-- Secret Onyx lore files with Founder references, Black Card records, Vault anomalies, and Syndicate rumors
-- Management ranks from Guest to The House, shown alongside profile and lobby status
+- Immersive central lobby hub with cinematic hero staging, animated casino background, Tonight at Onyx spotlight, live ambience, and portal-style location entries
+- Classic fixed sidebar removed from the live experience and replaced with floating game-style navigation
+- Compact cinematic status HUD for credits, level, VIP, net worth, Onyx Notes, and management rank
+- Scene-based visual identities for Casino Floor, Penthouse, High Roller, House Edge, Vault, VIP, and supporting pages
+- Layered atmosphere with moving lights, fog, crowd silhouettes, soft scene transitions, and reduced-motion support
+- Luxury showcase pass for Penthouse assets and collectible displays
+- Optional Web Audio ambience that responds to scene changes after player interaction and respects sound/reduced-animation settings
 
 ## Existing Major Systems
 
 - Version 1: Live Casino atmosphere, Tonight at Onyx events, Vault progression, cosmetics, big-win effects, retention prompts, and dynamic ambience
 - Version 2: Onyx Penthouse, fictional luxury assets, Vault Investments, High Roller World, prestige/status, dynamic luxury market, and Onyx Notes
+- Version 3: House Edge operations, table ownership, staff, NPC traffic, surveillance, simulator edge tools, operations events, management rank, and subtle Onyx lore
 
 ## Playable Games
 
@@ -35,19 +34,15 @@ Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress,
 
 All playable games remain connected to the shared economy, XP, VIP tiers, missions, achievements, transactions, session stats, sound hooks, Vault XP, and big-win effects.
 
-## Platform Sections
+## Scene-Based Navigation
 
-- Lobby: live floor, Tonight at Onyx, game cards, missions, achievements, recent wins, transactions, and status prompts
-- Penthouse: luxury assets, equipped showcase, net worth, lifestyle level, passive income, Onyx Notes, and luxury market
-- High Roller: status gate, unlock requirements, and premium table variant cards
-- House Edge: operations hub, table ownership, staff, NPC traffic, surveillance, edge tools, events, lore files, and logbook
-- Rewards: daily calendar, missions, achievements, VIP rewards, promo-style local codes, and reward claims
-- Vault: crates, keys, Vault XP, cosmetic inventory, recent reveals, and Vault Investments
-- VIP: tier progress, benefits, max bet unlocks, and next-tier preview
-- Profile: username, prestige title, management rank, net worth rank, lifestyle level, equipped cosmetics, luxury showcase, favorite game, and lifetime stats
-- History: transaction analytics and filters
-- Settings: username, sound, reduced animations, compact mode, save export/import, history clearing, reset, and known limitations
-- Help: simulator explanation, balance/VIP/missions/game guidance, Penthouse and House Edge guidance, and localStorage troubleshooting
+- Lobby: cinematic hub with portal destinations and live casino ambience
+- Casino Floor: playable 2D floor with movement and table interactions
+- Penthouse: luxury skyline suite and asset showcase
+- High Roller: private velvet-and-gold room with gated table variants
+- House Edge: surveillance operations room with CCTV styling and management systems
+- Vault: reward chamber, crates, inventory, and Credit Bonds
+- VIP Lounge: tier progress and benefits
 
 ## How to Run Locally
 
@@ -77,6 +72,7 @@ npx serve .
 - Version 1: Live Casino systems, Tonight at Onyx, The Vault, cosmetics, prestige identity, big-win effects, atmosphere, retention prompts, and platform polish
 - Version 2: Luxury assets, Onyx Penthouse, Vault Investments, High Roller World, prestige status, Onyx Notes, luxury market, and wealth progression
 - Version 3: House Edge operations, table ownership, staff, NPC traffic, surveillance, edge tools, operations events, management rank, and Onyx lore
+- Version 4: Immersive Lobby, scene-based navigation, sidebar removal, cinematic environments, atmospheric world layers, and ambient audio hooks
 
 ## Known Limitations
 
@@ -86,14 +82,13 @@ npx serve .
 - Surveillance incidents are fictional decision cards and do not teach real cheating or real-world abuse methods.
 - Edge Tools provide broad simulator hints only; they never guarantee outcomes.
 - High Roller variants currently reuse existing game engines with premium labels and access gates.
-- Onyx Notes are earned and displayed; a deeper rare shop is prepared for a future update.
+- Version 4 changes presentation heavily, but many internal systems still render their original data lists inside the new scene treatments.
 - Wheel, Baccarat, and Scratch Cards remain locked cards for future expansion.
 
 ## Roadmap Preview
 
-- Deeper House Edge table variants and table-specific reports
-- Rare Onyx Notes shop for prestige cosmetics, lore unlocks, and limited luxury listings
-- More authored operations events and Tonight at Onyx backroom event chains
-- More staff progression, fatigue, and performance history
-- Expanded Founder lore and hidden room progression
-- Wider mobile browser QA before a broader beta
+- Version 5: deeper first-person room transitions and more diegetic terminals
+- Floor-native game entrances for Slots, Roulette, and High Roller variants
+- More animated collectible showcases and cosmetic room effects
+- Expanded ambient audio layers with user-selectable sound themes
+- Better mobile gesture navigation and wider mobile browser QA

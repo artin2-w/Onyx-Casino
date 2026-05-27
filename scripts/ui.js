@@ -151,8 +151,8 @@ const modalCopy = {
     body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
   },
   'whats-new': {
-    title: 'Version 3: The House Edge',
-    body: '<div class="release-list"><p><strong>House Edge Hub:</strong> unlock a fictional operations dashboard with table licenses, staff, NPC traffic, reputation, and security risk.</p><p><strong>Surveillance Hub:</strong> review simulated incidents and choose game-like responses for reputation, Vault XP, and Onyx Notes.</p><p><strong>Edge Tools:</strong> unlock simulator-only probability hints that never guarantee wins or teach real-world advantage play.</p><p><strong>Onyx Lore:</strong> discover subtle Founder files, Black Card records, and backroom rumors as your operations rank grows.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
+    title: 'Version 4: The Immersive Lobby',
+    body: '<div class="release-list"><p><strong>Immersive Hub:</strong> the lobby is now a cinematic casino entrance with portal-style location navigation, live ambience, and event spotlighting.</p><p><strong>Scene Navigation:</strong> the fixed admin sidebar has been replaced by floating game-style navigation and softer scene transitions.</p><p><strong>Environment Pass:</strong> Penthouse, High Roller, House Edge, Vault, VIP, and Casino Floor now carry stronger visual identities and layered atmosphere.</p><p><strong>Audio Ambience:</strong> optional Web Audio ambience responds to the current scene after user interaction, with safe fallbacks and mute support.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
   }
 };
 
@@ -163,7 +163,13 @@ export function setView(viewName) {
   document.querySelector(`#view-${viewName}`)?.classList.add('is-visible');
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('is-active', btn.dataset.view === viewName));
   document.querySelectorAll('.mobile-bottom-nav button').forEach(btn => btn.classList.toggle('is-active', btn.dataset.view === viewName));
+  document.querySelectorAll('.immersive-nav button').forEach(btn => btn.classList.toggle('is-active', btn.dataset.view === viewName));
+  document.body.classList.toggle('floor-mode', viewName === 'floor');
+  document.body.dataset.scene = viewName;
+  document.body.classList.add('scene-changing');
+  window.setTimeout(() => document.body.classList.remove('scene-changing'), 420);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.dispatchEvent(new CustomEvent('onyx:view-change', { detail: { view: viewName } }));
 }
 
 export function renderAll() {
@@ -214,6 +220,9 @@ export function renderTopbar() {
   text('#onyxNotesText', `${state.onyxNotes.balance.toLocaleString()} notes`);
   text('#prestigeHeaderText', getPrestigeStatus().title);
   text('#managementRankText', getManagementRank().title);
+  text('#floorCreditsText', formatCredits(state.balance));
+  text('#floorLevelText', state.level);
+  text('#floorVipText', vip.current.name);
 }
 
 export function renderLiveCasino() {

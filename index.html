@@ -9,22 +9,31 @@
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
+  <div id="sceneTransition" class="scene-transition" aria-hidden="true"></div>
+  <div id="worldLayer" class="world-layer" aria-hidden="true">
+    <span class="world-beam beam-one"></span>
+    <span class="world-beam beam-two"></span>
+    <span class="world-fog"></span>
+    <span class="world-crowd crowd-one"></span>
+    <span class="world-crowd crowd-two"></span>
+  </div>
   <div class="age-safe-banner" role="note">
     <strong>Fake-money simulator.</strong> Virtual credits only. No real-money gambling.
   </div>
 
   <div class="app-shell">
     <aside class="sidebar" aria-label="Main navigation">
-      <button class="brand" data-view="lobby" aria-label="Open Onyx Casino lobby">
+      <button class="brand" data-view="floor" aria-label="Enter Onyx Casino floor">
         <span class="brand-mark" aria-hidden="true"><span class="onyx-logo-mark"></span></span>
         <span>
           <strong>Onyx Casino</strong>
           <small>Play-money lobby</small>
         </span>
       </button>
-      <button class="alpha-pill" data-modal="whats-new">Version 3 - The House Edge</button>
+      <button class="alpha-pill" data-modal="whats-new">Version 4 - Immersive Lobby</button>
 
       <nav class="nav-list">
+        <button class="nav-btn is-active" data-view="floor">Casino Floor</button>
         <button class="nav-btn is-active" data-view="lobby">Lobby</button>
         <button class="nav-btn" data-view="penthouse">Penthouse</button>
         <button class="nav-btn" data-view="highroller">High Roller</button>
@@ -106,7 +115,112 @@
 
       <section id="toastArea" class="toast-area" aria-live="polite"></section>
 
+      <section id="view-floor" class="view game-floor-view">
+        <div class="floor-hud" aria-label="Casino floor status">
+          <div class="floor-brand">
+            <span class="onyx-logo-mark" aria-hidden="true"></span>
+            <div><strong>Onyx Casino 3.0</strong><small>The Living Casino Floor</small></div>
+          </div>
+          <div class="floor-stat"><span>Credits</span><strong id="floorCreditsText">0 credits</strong></div>
+          <div class="floor-stat"><span>Level</span><strong id="floorLevelText">1</strong></div>
+          <div class="floor-stat"><span>VIP</span><strong id="floorVipText">Bronze</strong></div>
+          <div class="floor-stat"><span>Location</span><strong id="floorLocationText">Main Floor</strong></div>
+          <button class="floor-icon-btn" data-view="profile" aria-label="Open profile">ID</button>
+          <button class="floor-icon-btn" data-view="lobby" aria-label="Open immersive lobby">Lobby</button>
+        </div>
+
+        <div id="casinoFloorStage" class="casino-floor-stage" tabindex="0" aria-label="Interactive casino floor. Use WASD or arrow keys to move, E to interact.">
+          <div class="floor-vignette"></div>
+          <div class="floor-carpet"></div>
+          <div id="floorParticles" class="floor-particles" aria-hidden="true"></div>
+          <div id="floorNpcLayer" class="floor-npc-layer" aria-hidden="true"></div>
+
+          <button class="floor-object blackjack-object" data-floor-object="blackjack" data-target-view="blackjack" style="--x:52;--y:46" aria-label="Blackjack table">
+            <span class="table-glow"></span><strong>Blackjack</strong>
+          </button>
+          <button class="floor-object roulette-object" data-floor-object="roulette" data-target-view="roulette" style="--x:28;--y:43" aria-label="Roulette table">
+            <span class="roulette-mini-wheel"></span><strong>Roulette</strong>
+          </button>
+          <button class="floor-object slots-object" data-floor-object="slots" data-target-view="slots" style="--x:17;--y:72" aria-label="Slot machines">
+            <span class="slot-stack"><i>7</i><i>BAR</i><i>♦</i></span><strong>Slots</strong>
+          </button>
+          <button class="floor-object cashier-object" data-floor-object="cashier" data-target-view="rewards" style="--x:74;--y:70" aria-label="Cashier rewards desk">
+            <span class="cashier-line"></span><strong>Rewards Desk</strong>
+          </button>
+          <button class="floor-object vip-object" data-floor-object="vip" data-target-view="highroller" style="--x:79;--y:29" aria-label="VIP elevator">
+            <span class="elevator-light"></span><strong>VIP Elevator</strong>
+          </button>
+          <button class="floor-object penthouse-object" data-floor-object="penthouse" data-target-view="penthouse" style="--x:51;--y:18" aria-label="Penthouse elevator">
+            <span class="elevator-light gold"></span><strong>Penthouse</strong>
+          </button>
+          <button class="floor-object profile-object" data-floor-object="profile" data-target-view="profile" style="--x:86;--y:54" aria-label="Player phone profile">
+            <span class="phone-glow"></span><strong>Profile</strong>
+          </button>
+          <button class="floor-object exit-object" data-floor-object="lobby" data-target-view="lobby" style="--x:8;--y:24" aria-label="Classic dashboard">
+            <span class="exit-arrow"></span><strong>Classic</strong>
+          </button>
+
+          <div id="floorPlayer" class="floor-player" aria-hidden="true"><span></span></div>
+          <div id="floorInteractionPrompt" class="floor-prompt" hidden>Press E to interact</div>
+          <div id="floorNotificationFeed" class="floor-feed" aria-live="polite"></div>
+          <div class="floor-disclaimer">Virtual credits only. No real-money gambling.</div>
+          <div class="floor-controls-help">Move: WASD / arrows • Interact: E</div>
+          <div class="floor-touch-controls" aria-label="Touch movement controls">
+            <button data-move="up" aria-label="Move up">▲</button>
+            <button data-move="left" aria-label="Move left">◀</button>
+            <button data-move="down" aria-label="Move down">▼</button>
+            <button data-move="right" aria-label="Move right">▶</button>
+            <button data-floor-interact aria-label="Interact">E</button>
+          </div>
+        </div>
+      </section>
+
       <section id="view-lobby" class="view is-visible">
+        <section class="immersive-lobby-scene" aria-label="Onyx Casino immersive lobby hub">
+          <div class="lobby-cinema-bg" aria-hidden="true">
+            <span class="sign sign-left">ONYX</span>
+            <span class="sign sign-right">VIP</span>
+            <span class="lobby-roulette-orbit"></span>
+            <span class="lobby-crowd-line"></span>
+          </div>
+          <div class="lobby-hero-copy">
+            <p class="eyebrow">Version 4</p>
+            <h1>Enter the Immersive Lobby</h1>
+            <p>Move through a cinematic play-money casino world where every destination feels like a room, not a dashboard.</p>
+            <div class="hero-disclaimer">Virtual credits only. No real-money gambling.</div>
+            <div class="hero-actions">
+              <button class="primary" data-view="floor">Enter Casino Floor</button>
+              <button class="secondary" data-modal="whats-new">What's New</button>
+              <button class="ghost" data-modal="fakeMoney">Simulator Info</button>
+            </div>
+          </div>
+          <div class="event-spotlight">
+            <span>Tonight at Onyx</span>
+            <strong id="lobbySceneEventName">Diamond Rush</strong>
+            <small id="lobbySceneEventText">Vault XP glitters across the floor.</small>
+          </div>
+          <div class="portal-grid" aria-label="Casino locations">
+            <button class="portal-card portal-floor" data-view="floor">
+              <span class="portal-icon"></span><small>Playable Hall</small><strong>Casino Floor</strong>
+            </button>
+            <button class="portal-card portal-penthouse" data-view="penthouse">
+              <span class="portal-icon"></span><small>Skyline Suite</small><strong>Penthouse</strong>
+            </button>
+            <button class="portal-card portal-highroller" data-view="highroller">
+              <span class="portal-icon"></span><small>Private Room</small><strong>High Roller</strong>
+            </button>
+            <button class="portal-card portal-house" data-view="houseedge">
+              <span class="portal-icon"></span><small>Backroom Ops</small><strong>House Edge</strong>
+            </button>
+            <button class="portal-card portal-vault" data-view="vault">
+              <span class="portal-icon"></span><small>Reward Chamber</small><strong>Vault</strong>
+            </button>
+            <button class="portal-card portal-vip" data-view="vip">
+              <span class="portal-icon"></span><small>Club Access</small><strong>VIP Lounge</strong>
+            </button>
+          </div>
+        </section>
+
         <section class="live-floor-strip" aria-label="Simulated live casino status">
           <div><span class="live-dot"></span><strong id="onlinePlayersText">145 players online</strong><small>Simulated floor activity</small></div>
           <div><span class="label">Hot Game</span><strong id="hotGameText">Crash</strong></div>
@@ -131,7 +245,7 @@
             <div class="hero-actions">
               <button class="primary" data-open-game="slots">Play Featured Game</button>
               <button class="secondary" data-modal="rules-lobby">View Lobby Guide</button>
-              <button class="ghost" data-modal="whats-new">What's New in Version 3</button>
+              <button class="ghost" data-modal="whats-new">What's New in Version 4</button>
             </div>
           </div>
           <div class="hero-stage" aria-hidden="true">
@@ -647,6 +761,7 @@
           <div><p class="eyebrow">Featured Slot</p><h1>Onyx Slots</h1></div>
           <div class="header-actions">
             <button class="ghost" data-modal="rules-slots">Rules</button>
+            <button class="ghost" data-view="floor">Return to Floor</button>
             <button class="ghost" data-view="lobby">Back to Lobby</button>
           </div>
         </div>
@@ -688,6 +803,7 @@
           <div><p class="eyebrow">Table Game</p><h1>European Roulette</h1></div>
           <div class="header-actions">
             <button class="ghost" data-modal="rules-roulette">Rules</button>
+            <button class="ghost" data-view="floor">Return to Floor</button>
             <button class="ghost" data-view="lobby">Back to Lobby</button>
           </div>
         </div>
@@ -737,6 +853,7 @@
           <div><p class="eyebrow">Table Game</p><h1>Blackjack Classic</h1></div>
           <div class="header-actions">
             <button class="ghost" data-modal="rules-blackjack">Rules</button>
+            <button class="ghost" data-view="floor">Return to Floor</button>
             <button class="ghost" data-view="lobby">Back to Lobby</button>
           </div>
         </div>
@@ -1031,14 +1148,23 @@
     </div>
   </div>
 
+  <nav class="immersive-nav" aria-label="Game navigation">
+    <button data-view="lobby" class="is-active"><span>Hub</span></button>
+    <button data-view="floor"><span>Floor</span></button>
+    <button data-view="penthouse"><span>Suite</span></button>
+    <button data-view="highroller"><span>Elite</span></button>
+    <button data-view="houseedge"><span>Ops</span></button>
+    <button data-view="vault"><span>Vault</span></button>
+    <button data-view="vip"><span>VIP</span></button>
+  </nav>
+
   <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <button data-view="floor">Floor</button>
     <button data-view="lobby">Lobby</button>
     <button data-view="penthouse">Penthouse</button>
     <button data-view="houseedge">House</button>
     <button data-view="highroller">High Roller</button>
     <button data-view="rewards">Rewards</button>
-    <button data-view="vault">Vault</button>
-    <button data-view="settings">Settings</button>
   </nav>
 
   <footer class="sim-footer">Onyx Casino uses virtual credits only. No real-money gambling.</footer>
