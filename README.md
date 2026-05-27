@@ -1,26 +1,28 @@
-# Onyx Casino Version 4: The Immersive Lobby
+# Onyx Casino Version 5: The Playable World
 
-Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 4 is a presentation and immersion overhaul: the app now opens as a cinematic casino hub with floating game-style navigation, scene-based destinations, ambient world layers, and stronger luxury casino identity.
+Onyx Casino is a premium browser casino simulator built with vanilla HTML, CSS, and JavaScript modules. Version 5 pushes the project further toward a playable world: casino locations now have richer CSS-built focal objects, physical room metaphors, visual game zones, showroom displays, control-room monitors, and stronger game feel.
 
 ## Fake-Money Clarification
 
 Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress, Vault items, luxury assets, Onyx Notes, table licenses, staff, management rank, lore files, and events exist only inside the browser save. This project does not provide real-money gambling.
 
-## Version 4 Highlights
+## Version 5 Highlights
 
-- Immersive central lobby hub with cinematic hero staging, animated casino background, Tonight at Onyx spotlight, live ambience, and portal-style location entries
-- Classic fixed sidebar removed from the live experience and replaced with floating game-style navigation
-- Compact cinematic status HUD for credits, level, VIP, net worth, Onyx Notes, and management rank
-- Scene-based visual identities for Casino Floor, Penthouse, High Roller, House Edge, Vault, VIP, and supporting pages
-- Layered atmosphere with moving lights, fog, crowd silhouettes, soft scene transitions, and reduced-motion support
-- Luxury showcase pass for Penthouse assets and collectible displays
-- Optional Web Audio ambience that responds to scene changes after player interaction and respects sound/reduced-animation settings
+- Casino Floor becomes a visual floor map with glowing Blackjack, Roulette, Slots, Crash, Plinko, Mines, and Dice destinations
+- Tonight at Onyx now drives a featured center table on the casino floor
+- Penthouse becomes a luxury showroom with skyline window, spotlight pedestal, CSS asset silhouettes, safe terminal styling, and market tablet feel
+- House Edge reads as a surveillance control room with CCTV monitor wall, scanlines, alert pulse, staff boards, and terminal log styling
+- Vault becomes a cinematic vault room with a large animated vault door, lock rings, key slots, physical crate boxes, and rarity beam language
+- High Roller gains private-room visuals with black card entry, VIP host silhouette, elite table spotlights, and locked-room mood
+- Reusable CSS visual assets for chips, gems, cars, watches, jets, sculptures, roulette, blackjack, slots, Plinko, dice, vault, CCTV, and black cards
+- Camera/parallax feel, chip trails, burst effects, hover depth, and reduced-motion-safe visual juice
 
 ## Existing Major Systems
 
 - Version 1: Live Casino atmosphere, Tonight at Onyx events, Vault progression, cosmetics, big-win effects, retention prompts, and dynamic ambience
 - Version 2: Onyx Penthouse, fictional luxury assets, Vault Investments, High Roller World, prestige/status, dynamic luxury market, and Onyx Notes
 - Version 3: House Edge operations, table ownership, staff, NPC traffic, surveillance, simulator edge tools, operations events, management rank, and subtle Onyx lore
+- Version 4: Immersive Lobby, scene-based navigation, sidebar removal, cinematic environments, atmospheric world layers, and ambient audio hooks
 
 ## Playable Games
 
@@ -34,15 +36,15 @@ Onyx Casino uses fictional virtual credits only. Credits, rewards, VIP progress,
 
 All playable games remain connected to the shared economy, XP, VIP tiers, missions, achievements, transactions, session stats, sound hooks, Vault XP, and big-win effects.
 
-## Scene-Based Navigation
+## Scene-Based World
 
 - Lobby: cinematic hub with portal destinations and live casino ambience
-- Casino Floor: playable 2D floor with movement and table interactions
-- Penthouse: luxury skyline suite and asset showcase
-- High Roller: private velvet-and-gold room with gated table variants
-- House Edge: surveillance operations room with CCTV styling and management systems
-- Vault: reward chamber, crates, inventory, and Credit Bonds
-- VIP Lounge: tier progress and benefits
+- Casino Floor: playable 2D floor with movement, physical game zones, and featured event table
+- Penthouse: luxury skyline showroom, asset pedestal, owned gallery, income safe, and market tablet
+- High Roller: private velvet-and-gold room with gated elite tables
+- House Edge: surveillance control room with CCTV wall, monitor alerts, staff board, and operations terminal
+- Vault: giant vault chamber with animated door, crate boxes, reward pedestal, and Credit Bonds
+- VIP Lounge: tier progress and benefits with premium room styling
 
 ## How to Run Locally
 
@@ -73,6 +75,7 @@ npx serve .
 - Version 2: Luxury assets, Onyx Penthouse, Vault Investments, High Roller World, prestige status, Onyx Notes, luxury market, and wealth progression
 - Version 3: House Edge operations, table ownership, staff, NPC traffic, surveillance, edge tools, operations events, management rank, and Onyx lore
 - Version 4: Immersive Lobby, scene-based navigation, sidebar removal, cinematic environments, atmospheric world layers, and ambient audio hooks
+- Version 5: Playable World graphics pass, physical casino floor zones, Penthouse showroom, House Edge control room, Vault room, High Roller private room, CSS visual asset system, and stronger game juice
 
 ## Known Limitations
 
@@ -82,13 +85,13 @@ npx serve .
 - Surveillance incidents are fictional decision cards and do not teach real cheating or real-world abuse methods.
 - Edge Tools provide broad simulator hints only; they never guarantee outcomes.
 - High Roller variants currently reuse existing game engines with premium labels and access gates.
-- Version 4 changes presentation heavily, but many internal systems still render their original data lists inside the new scene treatments.
+- Version 5 changes presentation heavily, but some internal systems still render their original data lists inside the new scene treatments.
 - Wheel, Baccarat, and Scratch Cards remain locked cards for future expansion.
 
 ## Roadmap Preview
 
-- Version 5: deeper first-person room transitions and more diegetic terminals
-- Floor-native game entrances for Slots, Roulette, and High Roller variants
+- Version 6: deeper first-person room transitions and more diegetic terminals
+- More floor-native game entrances for Slots, Roulette, and High Roller variants
 - More animated collectible showcases and cosmetic room effects
 - Expanded ambient audio layers with user-selectable sound themes
 - Better mobile gesture navigation and wider mobile browser QA

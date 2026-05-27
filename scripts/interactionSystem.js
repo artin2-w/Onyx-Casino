@@ -6,6 +6,10 @@ const LABELS = {
   vip: 'Press E to call the VIP elevator',
   penthouse: 'Press E for Penthouse access',
   profile: 'Press E to open your profile phone',
+  crash: 'Press E to enter Crash Arcade',
+  plinko: 'Press E to drop into Plinko',
+  mines: 'Press E to enter Risk Corner',
+  dice: 'Press E to roll Dice Duel',
   lobby: 'Press E to open Classic dashboard'
 };
 

@@ -132,6 +132,31 @@
         <div id="casinoFloorStage" class="casino-floor-stage" tabindex="0" aria-label="Interactive casino floor. Use WASD or arrow keys to move, E to interact.">
           <div class="floor-vignette"></div>
           <div class="floor-carpet"></div>
+          <div id="featuredFloorTable" class="featured-floor-table hot-zone" data-open-game="crash" aria-hidden="true">
+            <span class="visual-asset visual-roulette"></span>
+            <strong id="featuredFloorGame">Tonight's Center Table</strong>
+            <small id="featuredFloorMeta">Event table warming up</small>
+          </div>
+          <div class="floor-zone-map" aria-label="Playable casino zones">
+            <button class="floor-zone zone-blackjack" data-floor-object="blackjack" data-target-view="blackjack" style="--x:53;--y:45">
+              <span class="visual-asset visual-blackjack"></span><small>Min 10 credits</small><strong>Blackjack Pit</strong><em>Dealer ready</em>
+            </button>
+            <button class="floor-zone zone-roulette" data-floor-object="roulette" data-target-view="roulette" style="--x:28;--y:45">
+              <span class="visual-asset visual-roulette"></span><small>Min 10 credits</small><strong>Roulette Zone</strong><em>Wheel live</em>
+            </button>
+            <button class="floor-zone zone-slots" data-floor-object="slots" data-target-view="slots" style="--x:17;--y:70">
+              <span class="visual-asset visual-slots"></span><small>Hot lights</small><strong>Slot Bank</strong><em>Jackpot buzz</em>
+            </button>
+            <button class="floor-zone zone-arcade" data-floor-object="crash" data-target-view="crash" style="--x:73;--y:50">
+              <span class="visual-asset visual-arcade"></span><small>Fast games</small><strong>Crash Arcade</strong><em>Multiplier rising</em>
+            </button>
+            <button class="floor-zone zone-plinko" data-floor-object="plinko" data-target-view="plinko" style="--x:66;--y:72">
+              <span class="visual-asset visual-plinko"></span><small>Drop board</small><strong>Plinko Wall</strong><em>Lights pulsing</em>
+            </button>
+            <button class="floor-zone zone-risk" data-floor-object="mines" data-target-view="mines" style="--x:36;--y:75">
+              <span class="visual-asset visual-gem"></span><small>Mines / Dice</small><strong>Risk Corner</strong><em>Choose your edge</em>
+            </button>
+          </div>
           <div id="floorParticles" class="floor-particles" aria-hidden="true"></div>
           <div id="floorNpcLayer" class="floor-npc-layer" aria-hidden="true"></div>
 
@@ -342,6 +367,12 @@
           <button class="ghost" data-view="lobby">Back to Lobby</button>
         </div>
         <section class="penthouse-hero panel">
+          <div class="showroom-window" aria-hidden="true">
+            <span class="city-light"></span><span class="city-light"></span><span class="city-light"></span>
+          </div>
+          <div class="showroom-pedestal" aria-hidden="true">
+            <span id="penthouseFeaturedVisual" class="visual-asset visual-chip"></span>
+          </div>
           <div>
             <p class="eyebrow">Lifestyle Progression</p>
             <h2 id="penthousePrestige">Lobby Regular</h2>
@@ -458,6 +489,11 @@
           <button class="ghost" data-view="lobby">Back to Lobby</button>
         </div>
         <section class="panel vault-hero">
+          <div class="vault-door-visual" aria-hidden="true">
+            <span class="vault-ring ring-one"></span>
+            <span class="vault-ring ring-two"></span>
+            <span class="vault-handle"></span>
+          </div>
           <div>
             <p class="eyebrow">Vault Progress</p>
             <h2 id="vaultLevelText">Level 1</h2>
@@ -510,6 +546,7 @@
         </div>
         <section class="panel high-roller-hero">
           <div class="high-roller-door" aria-hidden="true"><span></span></div>
+          <div class="vip-host-silhouette" aria-hidden="true"></div>
           <div>
             <p class="eyebrow">Status Gate</p>
             <h2 id="highRollerStatus">Invitation locked</h2>
@@ -550,6 +587,9 @@
 
         <section id="houseEdgeUnlocked" hidden>
           <section class="panel ops-hero">
+            <div class="control-room-wall" aria-hidden="true">
+              <span>CAM 01</span><span>CAM 02</span><span>CAM 03</span><span>CAM 04</span>
+            </div>
             <div>
               <p class="eyebrow">Backroom Dashboard</p>
               <h2 id="houseRankText">Guest</h2>

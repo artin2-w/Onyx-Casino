@@ -151,8 +151,8 @@ const modalCopy = {
     body: '<div class="paytable"><p><strong>Five on a payline:</strong> Onyx 60x, 7 45x, BAR 28x, Diamond 22x, Crown 18x, Bell 12x, Cherry 8x.</p><p><strong>Four on a payline:</strong> 30% of the five-symbol multiplier. <strong>Three:</strong> 10% of the five-symbol multiplier.</p><p><strong>Scatters:</strong> 3 scatters grant 5 free spins, 4 grant 8, 5 grant 12. Free spins use the triggering bet and do not subtract additional credits.</p></div>'
   },
   'whats-new': {
-    title: 'Version 4: The Immersive Lobby',
-    body: '<div class="release-list"><p><strong>Immersive Hub:</strong> the lobby is now a cinematic casino entrance with portal-style location navigation, live ambience, and event spotlighting.</p><p><strong>Scene Navigation:</strong> the fixed admin sidebar has been replaced by floating game-style navigation and softer scene transitions.</p><p><strong>Environment Pass:</strong> Penthouse, High Roller, House Edge, Vault, VIP, and Casino Floor now carry stronger visual identities and layered atmosphere.</p><p><strong>Audio Ambience:</strong> optional Web Audio ambience responds to the current scene after user interaction, with safe fallbacks and mute support.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
+    title: 'Version 5: The Playable World',
+    body: '<div class="release-list"><p><strong>Casino Floor:</strong> table destinations now read as a physical floor map with glowing zones, featured event table, arcade corners, crowd life, and chip particles.</p><p><strong>Penthouse Showroom:</strong> luxury assets gain CSS silhouettes, showroom pedestal focus, skyline ambience, safe terminal styling, and prestige glow.</p><p><strong>Control Room:</strong> House Edge has CCTV wall visuals, scanlines, alert pulses, staff boards, and terminal-style operations.</p><p><strong>Vault Room:</strong> crates, keys, and Vault progress now sit around a giant animated vault door.</p><p><strong>Reminder:</strong> Onyx Casino is a virtual-credit simulator. No real-money gambling.</p></div>'
   }
 };
 
@@ -712,13 +712,14 @@ export function renderGameGrid(category = 'featured') {
     .map(game => {
       const playable = game.status !== 'Coming soon';
       return `
-        <article class="game-card accent-${game.accent} ${playable ? '' : 'is-locked'}" ${playable ? `data-open-game="${game.id}"` : ''}>
+        <article class="game-card world-game-card accent-${game.accent} ${playable ? '' : 'is-locked'} ${game.id === getActiveEvent().featuredGame ? 'is-hot' : ''}" ${playable ? `data-open-game="${game.id}"` : ''}>
           <div class="game-card-top">
-            <span class="game-icon">${gameIcon(game.id)}</span>
+            <span class="game-icon visual-asset visual-${gameVisualClass(game.id)}">${gameIcon(game.id)}</span>
             <span class="status-pill">${game.status}</span>
           </div>
           <h3>${game.title}${game.id === getActiveEvent().featuredGame ? ' <span class="hot-dot">Hot</span>' : ''}</h3>
           <p>${game.meta}</p>
+          <small class="table-status">Live table - Min 10 credits</small>
           <button class="${playable ? 'secondary' : 'ghost'} small" ${playable ? '' : 'disabled'}>${playable ? 'Play' : 'Locked'}</button>
         </article>
       `;
@@ -1476,15 +1477,30 @@ function gameIcon(id) {
   }[id] || 'OC';
 }
 
+function gameVisualClass(id) {
+  return {
+    slots: 'slots',
+    roulette: 'roulette',
+    blackjack: 'blackjack',
+    dice: 'dice',
+    mines: 'gem',
+    crash: 'arcade',
+    plinko: 'plinko',
+    wheel: 'roulette',
+    baccarat: 'black-card',
+    scratch: 'chip'
+  }[id] || 'chip';
+}
+
 function assetCard(asset, options = {}) {
   const value = getLuxuryAssetValue(asset.id);
   const owned = !!options.owned;
   const equipped = !!options.equipped;
   const wished = !!options.wished;
   return `
-    <article class="asset-card rarity-${asset.rarity.toLowerCase()} ${equipped ? 'is-equipped' : ''}">
+    <article class="asset-card showroom-asset rarity-${asset.rarity.toLowerCase()} asset-${asset.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')} ${equipped ? 'is-equipped' : ''}">
       <div class="asset-top">
-        <span class="asset-icon">${asset.category.split(' ').map(word => word[0]).join('').slice(0, 2)}</span>
+        <span class="asset-icon visual-asset visual-${assetVisualClass(asset.category)}">${asset.category.split(' ').map(word => word[0]).join('').slice(0, 2)}</span>
         <span class="status-pill">${asset.rarity}</span>
       </div>
       <h3>${asset.name}</h3>
@@ -1500,6 +1516,16 @@ function assetCard(asset, options = {}) {
       </div>`}
     </article>
   `;
+}
+
+function assetVisualClass(category) {
+  if (category.includes('Watch')) return 'watch';
+  if (category.includes('Supercar')) return 'car';
+  if (category.includes('Jet')) return 'jet';
+  if (category.includes('Art') || category.includes('Collectibles')) return 'sculpture';
+  if (category.includes('Shares')) return 'black-card';
+  if (category.includes('Furniture')) return 'sofa';
+  return 'diamond';
 }
 
 function marketTrend(assetId) {
